@@ -6,6 +6,9 @@ use App\Exports\ApuExport;
 use App\Models\AnalysisHeader;
 use App\Models\AnalysisItem;
 use Illuminate\Http\Request;
+use App\Exports\ApuFullExport;
+use App\Exports\ApuSummaryExport;
+
 
 class ApuController extends Controller
 {
@@ -36,11 +39,11 @@ class ApuController extends Controller
     }
 
     public function exportSingle($id)
-    {
-        $apu = AnalysisHeader::findOrFail($id);
-        $filename = 'apu-' . $apu->code . '.xlsx';
-        return Excel::download(new ApuExport($id), $filename);
-    }
+{
+    $apu = AnalysisHeader::findOrFail($id);
+    $filename = 'apu-' . $apu->code . '.xlsx';
+    return Excel::download(new ApuFullExport($id), $filename);
+}
     // Agrega estos métodos dentro de la clase ApuController
 
 public function edit($id)
@@ -79,5 +82,10 @@ public function update(Request $request, $id)
     ]);
     
     return redirect()->route('apus.show', $apu->id)->with('success', 'APU actualizado correctamente');
+}
+
+public function exportSummary()
+{
+    return Excel::download(new ApuSummaryExport, 'apu-resumen-completo.xlsx');
 }
 }

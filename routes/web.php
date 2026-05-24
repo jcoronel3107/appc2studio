@@ -80,3 +80,4 @@ Route::get('/exportar-apu/{id}', [ApuController::class, 'exportSingle'])->name('
 
 Route::get('/apu/{id}/edit', [ApuController::class, 'edit'])->name('apus.edit');
 Route::put('/apu/{id}', [ApuController::class, 'update'])->name('apus.update');
+Route::get('/exportar-resumen', [ApuController::class, 'exportSummary'])->name('export.summary');
