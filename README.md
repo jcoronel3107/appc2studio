@@ -1,11 +1,14 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+Tu sistema de APU está completo
+Tienes un sistema totalmente funcional con todas estas características:
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Módulo                   	            Estado
+📤 Importar APU desde Excel         	✅
+📋 Listar todos los APUs            	✅
+👁️ Ver detalle de APU               	✅
+📊 Resumen de totales               	✅
+📥 Exportar a Excel	                    ✅
+✏️ Editar APU con cálculos automáticos	✅
+🛡️ Evitar duplicados                	✅
 
 ## About Laravel
 
