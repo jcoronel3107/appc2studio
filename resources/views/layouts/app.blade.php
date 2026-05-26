@@ -20,4 +20,3 @@
     </div>
 </body>
 </html>
-"@ | Out-File -FilePath resources\views\layouts\app.blade.php -Encoding UTF8
