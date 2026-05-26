@@ -1,4 +1,8 @@
 <div style="display: flex; align-items: center; gap: 20px;">
+    <a href="{{ route('dashboard') }}" style="color: #4b5563; text-decoration: none; padding: 8px 0;">
+    🏠 Dashboard
+    </a>
+    S<span style="color: #ccc;">|</span>
     <a href="{{ route('apus.index') }}" style="color: #4b5563; text-decoration: none;">📋 APUs</a>
     <span style="color: #ccc;">|</span>
     <a href="{{ route('materials.index') }}" style="color: #4b5563; text-decoration: none;">📦 Materiales</a>
@@ -11,7 +15,8 @@
     <span style="color: #ccc;">|</span>
     <a href="{{ route('export.apus') }}" style="color: #4b5563; text-decoration: none;">💾 Exportar</a>
     <span style="color: #ccc;">|</span>
-    
+    <a href="{{ route('apus.create') }}" style="color: #4b5563; text-decoration: none;">➕ Nuevo APU</a>
+    <span style="color: #ccc;">|</span>
     <!-- Menú de usuario -->
     <div style="position: relative;">
         <button onclick="toggleMenu()" style="background: none; border: none; cursor: pointer; color: #555;">
