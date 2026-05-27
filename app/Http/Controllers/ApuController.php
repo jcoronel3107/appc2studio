@@ -53,6 +53,62 @@ class ApuController extends Controller
                 ]);
             }
         }
+<<<<<<< HEAD
+=======
+        // Guardar mano de obra (NUEVA SECCIÓN)
+        if ($request->has('labors')) {
+            foreach ($request->labors as $labor) {
+            if (!empty($labor['labor_id']) && !empty($labor['quantity'])) {
+                $laborItem = Labor::find($labor['labor_id']);
+                if ($laborItem) {
+                    AnalysisItem::create([
+                        'analysis_header_id' => $apu->id,
+                        'section' => 'labor',
+                        'description' => $laborItem->name,
+                        'quantity' => $labor['quantity'],
+                        'unit_price' => $laborItem->hourly_rate,
+                        'performance' => $labor['performance'] ?? null,
+                        'total' => $labor['quantity'] * $laborItem->hourly_rate,
+                        'row_position' => 0,
+                    ]);
+                }
+            }
+             }
+        }
+
+
+
+        if ($request->has("materiales")) {
+            foreach ($request->materiales as $material) {
+                if (!empty($material["material_id"]) && !empty($material["quantity"])) {
+                    $materialItem = Material::find($material["material_id"]);
+                    if ($materialItem) {
+                        AnalysisItem::create([
+                            "analysis_header_id" => $apu->id,
+                            "section" => "material",
+                            "description" => $materialItem->name,
+                            "quantity" => $material["quantity"],
+                            "unit_price" => $materialItem->price,
+                            "total" => $material["quantity"] * $materialItem->price,
+                            "row_position" => 0,
+                        ]);
+                    }
+                }
+            }
+        }
+        
+        $totalDirecto = AnalysisItem::where("analysis_header_id", $apu->id)->sum("total");
+        $indirectos = $totalDirecto * 0.20;
+        $totalGeneral = $totalDirecto + $indirectos;
+        
+        $apu->update([
+            "total_direct_cost" => $totalDirecto,
+            "indirect_cost" => $indirectos,
+            "total_cost" => $totalGeneral,
+        ]);
+        
+        return redirect()->route("apus.index")->with("success", "APU creado exitosamente");
+>>>>>>> 44b1f367f9452c2e64304de23633481425512e65
     }
     
     // Guardar mano de obra
