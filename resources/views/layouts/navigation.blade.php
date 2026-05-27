@@ -9,6 +9,8 @@
     <span style="color: #ccc;">|</span>
     <a href="{{ route('equipments.index') }}" style="color: #4b5563; text-decoration: none;">🖥️ Equipos</a>
     <span style="color: #ccc;">|</span>
+    <a href="{{ route('labors.index') }}" style="color: #4b5563; text-decoration: none;">👷 Mano de Obra</a>
+    <span style="color: #ccc;">|</span>
     <a href="{{ url('/importar') }}" style="color: #4b5563; text-decoration: none;">📤 Importar APU</a>
     <span style="color: #ccc;">|</span>
     <a href="{{ route('apus.summary') }}" style="color: #4b5563; text-decoration: none;">📊 Resumen</a>

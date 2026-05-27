@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ApuFullExport;
 use App\Exports\ApuSummaryExport;
+use App\Models\Labor; // Agregar al inicio del controlador
 
 class ApuController extends Controller
 {
@@ -23,7 +24,8 @@ class ApuController extends Controller
     {
         $materiales = Material::orderBy("name")->get();
         $equipos = Equipment::orderBy("name")->get();
-        return view("apus.create", compact("materiales", "equipos"));
+         $labors = Labor::orderBy('name')->get(); // Agregar esta línea
+        return view("apus.create", compact("materiales", "equipos", "labors")); // Agregar "labors" al compact
     }
     
     public function store(Request $request)
@@ -53,7 +55,29 @@ class ApuController extends Controller
                 }
             }
         }
-        
+        // Guardar mano de obra (NUEVA SECCIÓN)
+        if ($request->has('labors')) {
+            foreach ($request->labors as $labor) {
+            if (!empty($labor['labor_id']) && !empty($labor['quantity'])) {
+                $laborItem = Labor::find($labor['labor_id']);
+                if ($laborItem) {
+                    AnalysisItem::create([
+                        'analysis_header_id' => $apu->id,
+                        'section' => 'labor',
+                        'description' => $laborItem->name,
+                        'quantity' => $labor['quantity'],
+                        'unit_price' => $laborItem->hourly_rate,
+                        'performance' => $labor['performance'] ?? null,
+                        'total' => $labor['quantity'] * $laborItem->hourly_rate,
+                        'row_position' => 0,
+                    ]);
+                }
+            }
+             }
+        }
+
+
+
         if ($request->has("materiales")) {
             foreach ($request->materiales as $material) {
                 if (!empty($material["material_id"]) && !empty($material["quantity"])) {

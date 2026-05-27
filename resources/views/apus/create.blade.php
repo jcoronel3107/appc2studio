@@ -46,7 +46,30 @@ echo '@extends("layouts.app")
                 </div>
                 <button type="button" id="add-equipo" style="background: #3b82f6; color: white; border: none; padding: 8px 16px; margin-top: 10px;">➕ Agregar Equipo</button>
             </div>
-            
+            <!-- MANO DE OBRA -->
+            <div style="margin-bottom: 30px;">
+                  <h3>👷 MANO DE OBRA</h3>
+                  <div id="labors-container">
+                  <div class="labor-row" style="margin-bottom: 10px; display: flex; gap: 10px;">
+                    <select name="labors[0][labor_id]" style="flex: 2; padding: 8px;" class="labor-select">
+                       <option value="">Seleccione un trabajador...</option>
+                       @foreach($labors as $labor)
+                            <option value="{{ $labor->id }}" data-price="{{ $labor->hourly_rate }}" data-unit="{{ $labor->unit }}">
+                                {{ $labor->code }} - {{ $labor->name }} (${{ number_format($labor->hourly_rate, 2) }}/{{ $labor->unit }})
+                            </option>
+                       @endforeach
+                    </select>
+                   <input type="number" name="labors[0][quantity]" placeholder="Cantidad" step="0.01" style="flex: 1; padding: 8px;" class="labor-cantidad">
+                     <input type="text" name="labors[0][unit]" placeholder="Unidad" style="flex: 1; padding: 8px;" class="labor-unidad" readonly>
+                    <input type="number" name="labors[0][performance]" placeholder="Rendimiento" step="0.01" style="flex: 1; padding: 8px;">
+                   <button type="button" class="remove-labor" style="background: #ef4444; color: white; border: none; padding: 8px 12px; cursor: pointer;">🗑️</button>
+            </div>
+                 </div>
+            <button type="button" id="add-labor" style="background: #3b82f6; color: white; border: none; padding: 8px 16px; margin-top: 10px;">➕ Agregar Trabajador</button>
+</div>
+
+
+
             <!-- MATERIALES -->
             <div style="margin-bottom: 30px;">
                 <h3>🧱 MATERIALES</h3>
@@ -90,7 +113,8 @@ echo '@extends("layouts.app")
                 <option value="">Seleccione un equipo...</option>
                 @foreach($equipos as $equipo)
                     <option value="{{ $equipo->id }}" data-price="{{ $equipo->price }}" data-unit="{{ $equipo->unit }}">
-                        {{ $equipo->code }} - {{ $equipo->name }} (${{ number_format($equipo->price, 2) }}/{{ $equipo->unit }})
+                         {{ $equipo->name }} (${{ number_format($equipo->price, 2) }}/{{ $equipo->unit }})
+                      
                     </option>
                 @endforeach
             </select>
@@ -187,5 +211,64 @@ echo '@extends("layouts.app")
             btn.closest(".material-row").remove();
         });
     });
+
+    // Contador para mano de obra
+let laborIndex = 1;
+
+// Agregar mano de obra
+document.getElementById("add-labor").addEventListener("click", function() {
+    const container = document.getElementById("labors-container");
+    const newRow = document.createElement("div");
+    newRow.className = "labor-row";
+    newRow.style = "margin-bottom: 10px; display: flex; gap: 10px;";
+    newRow.innerHTML = `
+        <select name="labors[${laborIndex}][labor_id]" style="flex: 2; padding: 8px;" class="labor-select">
+            <option value="">Seleccione un trabajador...</option>
+            @foreach($labors as $labor)
+                <option value="{{ $labor->id }}" data-price="{{ $labor->hourly_rate }}" data-unit="{{ $labor->unit }}">
+                    {{ $labor->code }} - {{ $labor->name }} (${{ number_format($labor->hourly_rate, 2) }}/{{ $labor->unit }})
+                </option>
+            @endforeach
+        </select>
+        <input type="number" name="labors[${laborIndex}][quantity]" placeholder="Cantidad" step="0.01" style="flex: 1; padding: 8px;" class="labor-cantidad">
+        <input type="text" name="labors[${laborIndex}][unit]" placeholder="Unidad" style="flex: 1; padding: 8px;" class="labor-unidad" readonly>
+        <input type="number" name="labors[${laborIndex}][performance]" placeholder="Rendimiento" step="0.01" style="flex: 1; padding: 8px;">
+        <button type="button" class="remove-labor" style="background: #ef4444; color: white; border: none; padding: 8px 12px; cursor: pointer;">🗑️</button>
+    `;
+    container.appendChild(newRow);
+    
+    // Agregar evento al select para cargar unidad
+    const select = newRow.querySelector(".labor-select");
+    const unitInput = newRow.querySelector(".labor-unidad");
+    select.addEventListener("change", function() {
+        const selectedOption = select.options[select.selectedIndex];
+        const unit = selectedOption.getAttribute("data-unit");
+        unitInput.value = unit || "";
+    });
+    
+    // Agregar evento al botón eliminar
+    newRow.querySelector(".remove-labor").addEventListener("click", function() {
+        newRow.remove();
+    });
+    
+    laborIndex++;
+});
+
+// Eventos para filas iniciales de mano de obra
+document.querySelectorAll(".labor-select").forEach(select => {
+    const unitInput = select.closest(".labor-row").querySelector(".labor-unidad");
+    select.addEventListener("change", function() {
+        const selectedOption = select.options[select.selectedIndex];
+        const unit = selectedOption.getAttribute("data-unit");
+        unitInput.value = unit || "";
+    });
+});
+
+document.querySelectorAll(".remove-labor").forEach(btn => {
+    btn.addEventListener("click", function() {
+        btn.closest(".labor-row").remove();
+    });
+});
+
 </script>
 @endsection' > resources\views\apus\create.blade.php

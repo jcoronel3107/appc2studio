@@ -6,6 +6,7 @@ use App\Http\Controllers\ApuImportController;
 use App\Http\Controllers\ApuController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\EquipmentController;
+use App\Http\Controllers\LaborController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -53,6 +54,13 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/equipments-import', [EquipmentController::class, 'import'])->name('equipments.import');
     Route::get('/equipments-export', [EquipmentController::class, 'export'])->name('equipments.export');
 });
+
+// Rutas de Mano de Obra
+Route::resource('labors', LaborController::class);
+Route::get('/labors-import', [LaborController::class, 'importForm'])->name('labors.import.form');
+Route::post('/labors-import', [LaborController::class, 'import'])->name('labors.import');
+Route::get('/labors-export', [LaborController::class, 'export'])->name('labors.export');
+
 
 // Rutas de autenticación (las proporciona Breeze)
 require __DIR__.'/auth.php';
