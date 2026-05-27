@@ -48,7 +48,6 @@
                 </div>
                 <button type="button" id="add-equipo" style="background: #3b82f6; color: white; border: none; padding: 8px 16px; margin-top: 10px;">➕ Agregar Equipo</button>
             </div>
-<<<<<<< HEAD
             
             <!-- MANO DE OBRA -->
             <div style="margin-bottom: 30px;">
@@ -74,32 +73,6 @@
                 <button type="button" id="add-labor" style="background: #3b82f6; color: white; border: none; padding: 8px 16px; margin-top: 10px;">➕ Agregar Trabajador</button>
             </div>
             
-=======
-            <!-- MANO DE OBRA -->
-            <div style="margin-bottom: 30px;">
-                  <h3>👷 MANO DE OBRA</h3>
-                  <div id="labors-container">
-                  <div class="labor-row" style="margin-bottom: 10px; display: flex; gap: 10px;">
-                    <select name="labors[0][labor_id]" style="flex: 2; padding: 8px;" class="labor-select">
-                       <option value="">Seleccione un trabajador...</option>
-                       @foreach($labors as $labor)
-                            <option value="{{ $labor->id }}" data-price="{{ $labor->hourly_rate }}" data-unit="{{ $labor->unit }}">
-                                {{ $labor->code }} - {{ $labor->name }} (${{ number_format($labor->hourly_rate, 2) }}/{{ $labor->unit }})
-                            </option>
-                       @endforeach
-                    </select>
-                   <input type="number" name="labors[0][quantity]" placeholder="Cantidad" step="0.01" style="flex: 1; padding: 8px;" class="labor-cantidad">
-                     <input type="text" name="labors[0][unit]" placeholder="Unidad" style="flex: 1; padding: 8px;" class="labor-unidad" readonly>
-                    <input type="number" name="labors[0][performance]" placeholder="Rendimiento" step="0.01" style="flex: 1; padding: 8px;">
-                   <button type="button" class="remove-labor" style="background: #ef4444; color: white; border: none; padding: 8px 12px; cursor: pointer;">🗑️</button>
-            </div>
-                 </div>
-            <button type="button" id="add-labor" style="background: #3b82f6; color: white; border: none; padding: 8px 16px; margin-top: 10px;">➕ Agregar Trabajador</button>
-</div>
-
-
-
->>>>>>> 44b1f367f9452c2e64304de23633481425512e65
             <!-- MATERIALES -->
             <div style="margin-bottom: 30px;">
                 <h3>🧱 MATERIALES</h3>
