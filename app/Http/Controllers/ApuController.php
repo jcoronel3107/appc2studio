@@ -29,87 +29,79 @@ class ApuController extends Controller
     }
     
     public function store(Request $request)
-    {
-        $apu = AnalysisHeader::create([
-            "code" => $request->code,
-            "name" => $request->name,
-            "unit" => $request->unit,
-        ]);
-        
-        if ($request->has("equipos")) {
-            foreach ($request->equipos as $equipo) {
-                if (!empty($equipo["material_id"]) && !empty($equipo["quantity"])) {
-                    $material = Equipment::find($equipo["material_id"]);
-                    if ($material) {
-                        AnalysisItem::create([
-                            "analysis_header_id" => $apu->id,
-                            "section" => "equipment",
-                            "description" => $material->name,
-                            "quantity" => $equipo["quantity"],
-                            "unit_price" => $material->price,
-                            "performance" => $equipo["performance"] ?? null,
-                            "total" => $equipo["quantity"] * $material->price,
-                            "row_position" => 0,
-                        ]);
-                    }
-                }
+{
+    // Crear el APU
+    $apu = AnalysisHeader::create([
+        'code' => $request->code,
+        'name' => $request->name,
+        'unit' => $request->unit,
+    ]);
+    
+    // Guardar equipos
+    if ($request->has('equipos')) {
+        foreach ($request->equipos as $equipo) {
+            if (!empty($equipo['material_id']) && !empty($equipo['quantity'])) {
+                AnalysisItem::create([
+                    'analysis_header_id' => $apu->id,
+                    'section' => 'equipment',
+                    'description' => $equipo['description'] ?? '',
+                    'quantity' => $equipo['quantity'],
+                    'unit_price' => $equipo['price'],
+                    'performance' => $equipo['performance'] ?? 1,
+                    'total' => $equipo['total'],
+                    'row_position' => 0,
+                ]);
             }
         }
-        // Guardar mano de obra (NUEVA SECCIÓN)
-        if ($request->has('labors')) {
-            foreach ($request->labors as $labor) {
-            if (!empty($labor['labor_id']) && !empty($labor['quantity'])) {
-                $laborItem = Labor::find($labor['labor_id']);
-                if ($laborItem) {
-                    AnalysisItem::create([
-                        'analysis_header_id' => $apu->id,
-                        'section' => 'labor',
-                        'description' => $laborItem->name,
-                        'quantity' => $labor['quantity'],
-                        'unit_price' => $laborItem->hourly_rate,
-                        'performance' => $labor['performance'] ?? null,
-                        'total' => $labor['quantity'] * $laborItem->hourly_rate,
-                        'row_position' => 0,
-                    ]);
-                }
-            }
-             }
-        }
-
-
-
-        if ($request->has("materiales")) {
-            foreach ($request->materiales as $material) {
-                if (!empty($material["material_id"]) && !empty($material["quantity"])) {
-                    $materialItem = Material::find($material["material_id"]);
-                    if ($materialItem) {
-                        AnalysisItem::create([
-                            "analysis_header_id" => $apu->id,
-                            "section" => "material",
-                            "description" => $materialItem->name,
-                            "quantity" => $material["quantity"],
-                            "unit_price" => $materialItem->price,
-                            "total" => $material["quantity"] * $materialItem->price,
-                            "row_position" => 0,
-                        ]);
-                    }
-                }
-            }
-        }
-        
-        $totalDirecto = AnalysisItem::where("analysis_header_id", $apu->id)->sum("total");
-        $indirectos = $totalDirecto * 0.20;
-        $totalGeneral = $totalDirecto + $indirectos;
-        
-        $apu->update([
-            "total_direct_cost" => $totalDirecto,
-            "indirect_cost" => $indirectos,
-            "total_cost" => $totalGeneral,
-        ]);
-        
-        return redirect()->route("apus.index")->with("success", "APU creado exitosamente");
     }
     
+    // Guardar mano de obra
+    if ($request->has('labors')) {
+        foreach ($request->labors as $labor) {
+            if (!empty($labor['labor_id']) && !empty($labor['quantity'])) {
+                AnalysisItem::create([
+                    'analysis_header_id' => $apu->id,
+                    'section' => 'labor',
+                    'description' => $labor['description'] ?? '',
+                    'quantity' => $labor['quantity'],
+                    'unit_price' => $labor['price'],
+                    'performance' => $labor['performance'] ?? 1,
+                    'total' => $labor['total'],
+                    'row_position' => 0,
+                ]);
+            }
+        }
+    }
+    
+    // Guardar materiales
+    if ($request->has('materiales')) {
+        foreach ($request->materiales as $material) {
+            if (!empty($material['material_id']) && !empty($material['quantity'])) {
+                AnalysisItem::create([
+                    'analysis_header_id' => $apu->id,
+                    'section' => 'material',
+                    'description' => $material['description'] ?? '',
+                    'quantity' => $material['quantity'],
+                    'unit_price' => $material['price'],
+                    'total' => $material['total'],
+                    'row_position' => 0,
+                ]);
+            }
+        }
+    }
+    
+    // Actualizar totales
+    $apu->update([
+        'total_direct_cost' => $request->total_direct_cost,
+        'indirect_cost' => $request->indirect_cost,
+        'total_cost' => $request->total_cost,
+    ]);
+    
+    return redirect()->route('apus.index')->with('success', 'APU creado exitosamente');
+}
+    
+
+
     public function show($id)
     {
         $apu = AnalysisHeader::with("items")->findOrFail($id);
