@@ -202,18 +202,6 @@
             calcularTotalEquipo(row);
             recalcularTotalesGenerales();
         });
-<<<<<<< HEAD
-=======
-        
-        // Botón eliminar
-        const removeBtn = row.querySelector(".remove-equipo");
-        if (removeBtn) {
-            removeBtn.addEventListener("click", function() {
-                row.remove();
-                recalcularTotalesGenerales();
-            });
-        }
->>>>>>> d730ae616d903da531e23ca6322cf2b6eab728a5
     }
     
     function configurarEventosLabor(row) {
@@ -240,18 +228,6 @@
             calcularTotalLabor(row);
             recalcularTotalesGenerales();
         });
-<<<<<<< HEAD
-=======
-        
-        // Botón eliminar
-        const removeBtn = row.querySelector(".remove-labor");
-        if (removeBtn) {
-            removeBtn.addEventListener("click", function() {
-                row.remove();
-                recalcularTotalesGenerales();
-            });
-        }
->>>>>>> d730ae616d903da531e23ca6322cf2b6eab728a5
     }
     
     function configurarEventosMaterial(row) {
@@ -272,23 +248,8 @@
             calcularTotalMaterial(row);
             recalcularTotalesGenerales();
         });
-<<<<<<< HEAD
     }
     
-=======
-        
-        // Botón eliminar
-        const removeBtn = row.querySelector(".remove-material");
-        if (removeBtn) {
-            removeBtn.addEventListener("click", function() {
-                row.remove();
-                recalcularTotalesGenerales();
-            });
-        }
-    }
-    
-    // Configurar filas iniciales
->>>>>>> d730ae616d903da531e23ca6322cf2b6eab728a5
     document.querySelectorAll(".equipo-row").forEach(row => configurarEventosEquipo(row));
     document.querySelectorAll(".labor-row").forEach(row => configurarEventosLabor(row));
     document.querySelectorAll(".material-row").forEach(row => configurarEventosMaterial(row));
@@ -316,7 +277,6 @@
             <input type="number" name="equipos[${equipoIndex}][price]" placeholder="💰 Precio" step="0.01" style="flex: 1; padding: 8px;" class="equipo-precio" readonly>
             <input type="number" name="equipos[${equipoIndex}][performance]" placeholder="⚙️ Rendimiento" step="0.01" style="flex: 1; padding: 8px;" class="equipo-rendimiento" value="1">
             <input type="number" name="equipos[${equipoIndex}][total]" placeholder="💲 Total" step="0.01" style="flex: 1; padding: 8px; background:#e0e0e0;" class="equipo-total" readonly>
-<<<<<<< HEAD
             <button type="button" class="remove-equipo" style="background: #ef4444; color: white; border: none; padding: 8px 12px; cursor: pointer;">🗑️</button>
         `;
         container.appendChild(newRow);
@@ -328,16 +288,6 @@
         equipoIndex++;
     });
     
-=======
-            <button type="button" class="remove-equipo" style="background: #ef4444; color: white; border: none; padding: 8px 12px; cursor: pointer;">🗑️ Eliminar</button>
-        `;
-        container.appendChild(newRow);
-        configurarEventosEquipo(newRow);
-        equipoIndex++;
-    });
-    
-    // Agregar mano de obra
->>>>>>> d730ae616d903da531e23ca6322cf2b6eab728a5
     document.getElementById("add-labor").addEventListener("click", function() {
         const container = document.getElementById("labors-container");
         const newRow = document.createElement("div");
@@ -357,7 +307,6 @@
             <input type="number" name="labors[${laborIndex}][price]" placeholder="💰 Tarifa" step="0.01" style="flex: 1; padding: 8px;" class="labor-precio" readonly>
             <input type="number" name="labors[${laborIndex}][performance]" placeholder="⚙️ Rendimiento" step="0.01" style="flex: 1; padding: 8px;" class="labor-rendimiento" value="1">
             <input type="number" name="labors[${laborIndex}][total]" placeholder="💲 Total" step="0.01" style="flex: 1; padding: 8px; background:#e0e0e0;" class="labor-total" readonly>
-<<<<<<< HEAD
             <button type="button" class="remove-labor" style="background: #ef4444; color: white; border: none; padding: 8px 12px; cursor: pointer;">🗑️</button>
         `;
         container.appendChild(newRow);
@@ -369,16 +318,6 @@
         laborIndex++;
     });
     
-=======
-            <button type="button" class="remove-labor" style="background: #ef4444; color: white; border: none; padding: 8px 12px; cursor: pointer;">🗑️ Eliminar</button>
-        `;
-        container.appendChild(newRow);
-        configurarEventosLabor(newRow);
-        laborIndex++;
-    });
-    
-    // Agregar material
->>>>>>> d730ae616d903da531e23ca6322cf2b6eab728a5
     document.getElementById("add-material").addEventListener("click", function() {
         const container = document.getElementById("materiales-container");
         const newRow = document.createElement("div");
@@ -397,7 +336,6 @@
             <input type="text" name="materiales[${materialIndex}][unit]" placeholder="📏 Unidad" style="flex: 1; padding: 8px;" class="material-unidad" readonly>
             <input type="number" name="materiales[${materialIndex}][price]" placeholder="💰 Precio" step="0.01" style="flex: 1; padding: 8px;" class="material-precio" readonly>
             <input type="number" name="materiales[${materialIndex}][total]" placeholder="💲 Total" step="0.01" style="flex: 1; padding: 8px; background:#e0e0e0;" class="material-total" readonly>
-<<<<<<< HEAD
             <button type="button" class="remove-material" style="background: #ef4444; color: white; border: none; padding: 8px 12px; cursor: pointer;">🗑️</button>
         `;
         container.appendChild(newRow);
@@ -410,108 +348,5 @@
     });
     
     recalcularTotalesGenerales();
-=======
-            <button type="button" class="remove-material" style="background: #ef4444; color: white; border: none; padding: 8px 12px; cursor: pointer;">🗑️ Eliminar</button>
-        `;
-        container.appendChild(newRow);
-        configurarEventosMaterial(newRow);
-        materialIndex++;
-    });
-    
-<<<<<<< HEAD
-    recalcularTotalesGenerales();
-=======
-    // Eventos para filas iniciales
-    document.querySelectorAll(".equipo-select").forEach(select => {
-        const unitInput = select.closest(".equipo-row").querySelector(".equipo-unidad");
-        select.addEventListener("change", function() {
-            const selectedOption = select.options[select.selectedIndex];
-            const unit = selectedOption.getAttribute("data-unit");
-            unitInput.value = unit || "";
-        });
-    });
-    
-    document.querySelectorAll(".material-select").forEach(select => {
-        const unitInput = select.closest(".material-row").querySelector(".material-unidad");
-        select.addEventListener("change", function() {
-            const selectedOption = select.options[select.selectedIndex];
-            const unit = selectedOption.getAttribute("data-unit");
-            unitInput.value = unit || "";
-        });
-    });
-    
-    // Botones eliminar iniciales
-    document.querySelectorAll(".remove-equipo").forEach(btn => {
-        btn.addEventListener("click", function() {
-            btn.closest(".equipo-row").remove();
-        });
-    });
-    
-    document.querySelectorAll(".remove-material").forEach(btn => {
-        btn.addEventListener("click", function() {
-            btn.closest(".material-row").remove();
-        });
-    });
-
-    // Contador para mano de obra
-let laborIndex = 1;
-
-// Agregar mano de obra
-document.getElementById("add-labor").addEventListener("click", function() {
-    const container = document.getElementById("labors-container");
-    const newRow = document.createElement("div");
-    newRow.className = "labor-row";
-    newRow.style = "margin-bottom: 10px; display: flex; gap: 10px;";
-    newRow.innerHTML = `
-        <select name="labors[${laborIndex}][labor_id]" style="flex: 2; padding: 8px;" class="labor-select">
-            <option value="">Seleccione un trabajador...</option>
-            @foreach($labors as $labor)
-                <option value="{{ $labor->id }}" data-price="{{ $labor->hourly_rate }}" data-unit="{{ $labor->unit }}">
-                    {{ $labor->code }} - {{ $labor->name }} (${{ number_format($labor->hourly_rate, 2) }}/{{ $labor->unit }})
-                </option>
-            @endforeach
-        </select>
-        <input type="number" name="labors[${laborIndex}][quantity]" placeholder="Cantidad" step="0.01" style="flex: 1; padding: 8px;" class="labor-cantidad">
-        <input type="text" name="labors[${laborIndex}][unit]" placeholder="Unidad" style="flex: 1; padding: 8px;" class="labor-unidad" readonly>
-        <input type="number" name="labors[${laborIndex}][performance]" placeholder="Rendimiento" step="0.01" style="flex: 1; padding: 8px;">
-        <button type="button" class="remove-labor" style="background: #ef4444; color: white; border: none; padding: 8px 12px; cursor: pointer;">🗑️</button>
-    `;
-    container.appendChild(newRow);
-    
-    // Agregar evento al select para cargar unidad
-    const select = newRow.querySelector(".labor-select");
-    const unitInput = newRow.querySelector(".labor-unidad");
-    select.addEventListener("change", function() {
-        const selectedOption = select.options[select.selectedIndex];
-        const unit = selectedOption.getAttribute("data-unit");
-        unitInput.value = unit || "";
-    });
-    
-    // Agregar evento al botón eliminar
-    newRow.querySelector(".remove-labor").addEventListener("click", function() {
-        newRow.remove();
-    });
-    
-    laborIndex++;
-});
-
-// Eventos para filas iniciales de mano de obra
-document.querySelectorAll(".labor-select").forEach(select => {
-    const unitInput = select.closest(".labor-row").querySelector(".labor-unidad");
-    select.addEventListener("change", function() {
-        const selectedOption = select.options[select.selectedIndex];
-        const unit = selectedOption.getAttribute("data-unit");
-        unitInput.value = unit || "";
-    });
-});
-
-document.querySelectorAll(".remove-labor").forEach(btn => {
-    btn.addEventListener("click", function() {
-        btn.closest(".labor-row").remove();
-    });
-});
-
->>>>>>> 44b1f367f9452c2e64304de23633481425512e65
->>>>>>> d730ae616d903da531e23ca6322cf2b6eab728a5
 </script>
 @endsection
