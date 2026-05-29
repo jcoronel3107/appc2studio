@@ -15,10 +15,10 @@ use App\Models\Labor; // Agregar al inicio del controlador
 class ApuController extends Controller
 {
     public function index()
-    {
-        $apus = AnalysisHeader::with("items")->latest()->get();
-        return view("apus.index", compact("apus"));
-    }
+{
+    $apus = AnalysisHeader::with('items')->latest()->paginate(10);
+    return view('apus.index', compact('apus'));
+}
     
     public function create()
     {
