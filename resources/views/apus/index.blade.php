@@ -19,6 +19,9 @@ echo '<!DOCTYPE html>
     <div class="container">
         <h1>📋 Listado de Análisis de Precios Unitarios</h1>
         
+        <a href="{{ route('apus.clone', $apu->id) }}" style="color: #8b5cf6; margin-left: 10px;">📋 Clonar</a>
+
+
         <a href="/importar" class="btn btn-import">➕ Importar nuevo APU</a>
         <a href="/apu-summary" class="btn">📊 Ver resumen</a>
         <a href="{{ route('export.apus') }}" class="btn" style="background:#17a2b8">📥 Exportar todos</a>

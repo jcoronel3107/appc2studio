@@ -24,6 +24,9 @@ echo '<!DOCTYPE html>
         <a href="/apus" class="btn">← Volver al listado</a>
         <a href="/exportar-apu/{{ $apu->id }}" class="btn btn-export">📥 Exportar este APU</a>
         <a href="/apu/{{ $apu->id }}/edit" class="btn" style="background:#ffc107; color:#333; margin-left:10px;">✏️ Editar APU</a>
+
+        <a href="{{ route('apus.clone', $apu->id) }}" class="btn" style="background:#8b5cf6; margin-left:10px;">📋 Clonar APU</a>
+
         <h1>📄 Análisis de Precios Unitarios</h1>
         
         <div class="header-info">

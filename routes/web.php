@@ -42,6 +42,17 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/exportar-apus', [ApuController::class, 'exportAll'])->name('export.apus');
     Route::get('/exportar-apu/{id}', [ApuController::class, 'exportSingle'])->name('export.apu');
     
+    // Rutas para clonar APUs
+    Route::get('/apu/clonar/{id}', [ApuController::class, 'clone'])->name('apus.clone');
+Route::post('/apu/clonar/{id}', [ApuController::class, 'cloneStore'])->name('apus.clone.store');
+
+
+
+
+
+    // Rutas para materiales y equipos
+
+
     // ========== MATERIALES ==========
     Route::resource('materials', MaterialController::class);
     Route::get('/materials-import', [MaterialController::class, 'importForm'])->name('materials.import.form');

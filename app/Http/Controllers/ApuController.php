@@ -173,4 +173,105 @@ class ApuController extends Controller
         $apu->delete();
         return redirect()->route("apus.index")->with("success", "APU eliminado correctamente");
     }
+
+
+    // Métodos para clonar APUs
+    public function clone($id)
+{
+    $apuOriginal = AnalysisHeader::with('items')->findOrFail($id);
+    $materiales = Material::orderBy('name')->get();
+    $equipos = Equipment::orderBy('name')->get();
+    $labors = Labor::orderBy('name')->get();
+    
+    return view('apus.clone', compact('apuOriginal', 'materiales', 'equipos', 'labors'));
+}
+
+public function cloneStore(Request $request, $id)
+{
+    $apuOriginal = AnalysisHeader::findOrFail($id);
+    
+    if ($request->action == 'sobrescribir') {
+        // Sobrescribir el APU existente
+        $apu = $apuOriginal;
+        
+        // Eliminar items antiguos
+        AnalysisItem::where('analysis_header_id', $apu->id)->delete();
+        
+    } else {
+        // Crear nuevo APU
+        $apu = AnalysisHeader::create([
+            'code' => $request->code,
+            'name' => $request->name,
+            'unit' => $request->unit,
+        ]);
+    }
+    
+    // Guardar equipos
+    if ($request->has('equipos')) {
+        foreach ($request->equipos as $equipo) {
+            if (!empty($equipo['material_id']) && !empty($equipo['quantity'])) {
+                AnalysisItem::create([
+                    'analysis_header_id' => $apu->id,
+                    'section' => 'equipment',
+                    'description' => $equipo['description'] ?? '',
+                    'quantity' => $equipo['quantity'],
+                    'unit_price' => $equipo['price'],
+                    'performance' => $equipo['performance'] ?? 1,
+                    'total' => $equipo['total'],
+                    'row_position' => 0,
+                ]);
+            }
+        }
+    }
+    
+    // Guardar mano de obra
+    if ($request->has('labors')) {
+        foreach ($request->labors as $labor) {
+            if (!empty($labor['labor_id']) && !empty($labor['quantity'])) {
+                AnalysisItem::create([
+                    'analysis_header_id' => $apu->id,
+                    'section' => 'labor',
+                    'description' => $labor['description'] ?? '',
+                    'quantity' => $labor['quantity'],
+                    'unit_price' => $labor['price'],
+                    'performance' => $labor['performance'] ?? 1,
+                    'total' => $labor['total'],
+                    'row_position' => 0,
+                ]);
+            }
+        }
+    }
+    
+    // Guardar materiales
+    if ($request->has('materiales')) {
+        foreach ($request->materiales as $material) {
+            if (!empty($material['material_id']) && !empty($material['quantity'])) {
+                AnalysisItem::create([
+                    'analysis_header_id' => $apu->id,
+                    'section' => 'material',
+                    'description' => $material['description'] ?? '',
+                    'quantity' => $material['quantity'],
+                    'unit_price' => $material['price'],
+                    'total' => $material['total'],
+                    'row_position' => 0,
+                ]);
+            }
+        }
+    }
+    
+    // Actualizar totales
+    $apu->update([
+        'total_direct_cost' => $request->total_direct_cost,
+        'indirect_cost' => $request->indirect_cost,
+        'total_cost' => $request->total_cost,
+    ]);
+    
+    $mensaje = $request->action == 'sobrescribir' 
+        ? 'APU sobrescrito exitosamente' 
+        : 'APU clonado exitosamente';
+    
+    return redirect()->route('apus.index')->with('success', $mensaje);
+}
+
+
 }
