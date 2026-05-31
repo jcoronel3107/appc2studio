@@ -11,6 +11,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ApuFullExport;
 use App\Exports\ApuSummaryExport;
 use App\Models\Labor; // Agregar al inicio del controlador
+use App\Models\Transport; // Agregar al inicio del controlador
 
 class ApuController extends Controller
 {
@@ -20,13 +21,15 @@ class ApuController extends Controller
     return view('apus.index', compact('apus'));
 }
     
-    public function create()
-    {
-        $materiales = Material::orderBy("name")->get();
-        $equipos = Equipment::orderBy("name")->get();
-         $labors = Labor::orderBy('name')->get(); // Agregar esta línea
-        return view("apus.create", compact("materiales", "equipos", "labors")); // Agregar "labors" al compact
-    }
+   public function create()
+{
+    $materiales = Material::orderBy('name')->get();
+    $equipos = Equipment::orderBy('name')->get();
+    $labors = Labor::orderBy('name')->get();
+    $transportes = Transport::orderBy('name')->get();
+    
+    return view('apus.create', compact('materiales', 'equipos', 'labors', 'transportes'));
+}
     
     public function store(Request $request)
 {
@@ -37,20 +40,29 @@ class ApuController extends Controller
         'unit' => $request->unit,
     ]);
     
+    // Guardar archivo Word
+    if ($request->hasFile('word_file')) {
+        $path = $request->file('word_file')->store('apu_files', 'public');
+        $apu->update(['word_file' => $path]);
+    }
+    
     // Guardar equipos
     if ($request->has('equipos')) {
         foreach ($request->equipos as $equipo) {
             if (!empty($equipo['material_id']) && !empty($equipo['quantity'])) {
-                AnalysisItem::create([
-                    'analysis_header_id' => $apu->id,
-                    'section' => 'equipment',
-                    'description' => $equipo['description'] ?? '',
-                    'quantity' => $equipo['quantity'],
-                    'unit_price' => $equipo['price'],
-                    'performance' => $equipo['performance'] ?? 1,
-                    'total' => $equipo['total'],
-                    'row_position' => 0,
-                ]);
+                $material = Equipment::find($equipo['material_id']);
+                if ($material) {
+                    AnalysisItem::create([
+                        'analysis_header_id' => $apu->id,
+                        'section' => 'equipment',
+                        'description' => $material->name,
+                        'quantity' => $equipo['quantity'],
+                        'unit_price' => $material->price,
+                        'performance' => $equipo['performance'] ?? 1,
+                        'total' => $equipo['quantity'] * $material->price * ($equipo['performance'] ?? 1),
+                        'row_position' => 0,
+                    ]);
+                }
             }
         }
     }
@@ -59,16 +71,19 @@ class ApuController extends Controller
     if ($request->has('labors')) {
         foreach ($request->labors as $labor) {
             if (!empty($labor['labor_id']) && !empty($labor['quantity'])) {
-                AnalysisItem::create([
-                    'analysis_header_id' => $apu->id,
-                    'section' => 'labor',
-                    'description' => $labor['description'] ?? '',
-                    'quantity' => $labor['quantity'],
-                    'unit_price' => $labor['price'],
-                    'performance' => $labor['performance'] ?? 1,
-                    'total' => $labor['total'],
-                    'row_position' => 0,
-                ]);
+                $laborItem = Labor::find($labor['labor_id']);
+                if ($laborItem) {
+                    AnalysisItem::create([
+                        'analysis_header_id' => $apu->id,
+                        'section' => 'labor',
+                        'description' => $laborItem->name,
+                        'quantity' => $labor['quantity'],
+                        'unit_price' => $laborItem->hourly_rate,
+                        'performance' => $labor['performance'] ?? 1,
+                        'total' => $labor['quantity'] * $laborItem->hourly_rate * ($labor['performance'] ?? 1),
+                        'row_position' => 0,
+                    ]);
+                }
             }
         }
     }
@@ -77,15 +92,39 @@ class ApuController extends Controller
     if ($request->has('materiales')) {
         foreach ($request->materiales as $material) {
             if (!empty($material['material_id']) && !empty($material['quantity'])) {
-                AnalysisItem::create([
-                    'analysis_header_id' => $apu->id,
-                    'section' => 'material',
-                    'description' => $material['description'] ?? '',
-                    'quantity' => $material['quantity'],
-                    'unit_price' => $material['price'],
-                    'total' => $material['total'],
-                    'row_position' => 0,
-                ]);
+                $materialItem = Material::find($material['material_id']);
+                if ($materialItem) {
+                    AnalysisItem::create([
+                        'analysis_header_id' => $apu->id,
+                        'section' => 'material',
+                        'description' => $materialItem->name,
+                        'quantity' => $material['quantity'],
+                        'unit_price' => $materialItem->price,
+                        'total' => $material['quantity'] * $materialItem->price,
+                        'row_position' => 0,
+                    ]);
+                }
+            }
+        }
+    }
+    
+    // Guardar transporte
+    if ($request->has('transportes')) {
+        foreach ($request->transportes as $transporte) {
+            if (!empty($transporte['material_id']) && !empty($transporte['quantity'])) {
+                $transportItem = Equipment::find($transporte['material_id']);
+                if ($transportItem) {
+                    AnalysisItem::create([
+                        'analysis_header_id' => $apu->id,
+                        'section' => 'transport',
+                        'description' => $transportItem->name,
+                        'quantity' => $transporte['quantity'],
+                        'unit_price' => $transportItem->price,
+                        'performance' => $transporte['performance'] ?? 1,
+                        'total' => $transporte['quantity'] * $transportItem->price * ($transporte['performance'] ?? 1),
+                        'row_position' => 0,
+                    ]);
+                }
             }
         }
     }

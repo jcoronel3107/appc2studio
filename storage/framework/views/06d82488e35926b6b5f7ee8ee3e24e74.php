@@ -3,7 +3,7 @@
     <div style="background: white; border-radius: 8px; padding: 20px;">
         <h1>📝 Nuevo Análisis de Precios Unitarios</h1>
         
-        <form method="POST" action="<?php echo e(route('apus.store')); ?>" id="apuForm">
+        <form method="POST" action="<?php echo e(route('apus.store')); ?>" id="apuForm" enctype="multipart/form-data">
             <?php echo csrf_field(); ?>
             
             <!-- Datos de cabecera -->
@@ -20,6 +20,11 @@
                 <div style="margin-bottom: 10px;">
                     <label>Unidad:</label>
                     <input type="text" name="unit" required placeholder="📏 Ej: m2, m3, unidad" style="width:100%; padding: 8px;">
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <label>📄 Archivo Word (Opcional):</label>
+                    <input type="file" name="word_file" accept=".doc,.docx" style="width:100%; padding: 8px;">
+                    <small style="color: #666;">Formatos permitidos: .doc, .docx (Tamaño máximo: 5MB)</small>
                 </div>
             </div>
             
@@ -94,11 +99,36 @@
                 <button type="button" id="add-material" style="background: #3b82f6; color: white; border: none; padding: 8px 16px; margin-top: 10px; cursor: pointer;">➕ Agregar Material</button>
             </div>
             
+            <!-- TRANSPORTE (usando tabla transports) -->
+            <div style="margin-bottom: 30px;">
+                <h3>🚚 TRANSPORTE</h3>
+                <div id="transportes-container">
+                    <div class="transporte-row" style="margin-bottom: 10px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                        <select name="transportes[0][material_id]" style="flex: 2; padding: 8px;" class="transporte-select select2">
+                            <option value="">🔍 Seleccione un transporte...</option>
+                            <?php $__currentLoopData = $transportes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $transporte): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <option value="<?php echo e($transporte->id); ?>" data-price="<?php echo e($transporte->price); ?>" data-unit="<?php echo e($transporte->unit); ?>">
+                                    <?php echo e($transporte->code); ?> - <?php echo e($transporte->name); ?> ($<?php echo e(number_format($transporte->price, 2)); ?>/<?php echo e($transporte->unit); ?>)
+                                </option>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        </select>
+                        <input type="number" name="transportes[0][quantity]" placeholder="📊 Cantidad" step="0.01" style="flex: 1; padding: 8px;" class="transporte-cantidad" value="0">
+                        <input type="text" name="transportes[0][unit]" placeholder="📏 Unidad" style="flex: 1; padding: 8px;" class="transporte-unidad" readonly>
+                        <input type="number" name="transportes[0][price]" placeholder="💰 Precio" step="0.01" style="flex: 1; padding: 8px;" class="transporte-precio" readonly>
+                        <input type="number" name="transportes[0][performance]" placeholder="⚙️ Rendimiento" step="0.01" style="flex: 1; padding: 8px;" class="transporte-rendimiento" value="1">
+                        <input type="number" name="transportes[0][total]" placeholder="💲 Total" step="0.01" style="flex: 1; padding: 8px; background:#e0e0e0;" class="transporte-total" readonly>
+                        <button type="button" class="remove-transporte" style="background: #ef4444; color: white; border: none; padding: 8px 12px; cursor: pointer;">🗑️</button>
+                    </div>
+                </div>
+                <button type="button" id="add-transporte" style="background: #3b82f6; color: white; border: none; padding: 8px 16px; margin-top: 10px; cursor: pointer;">➕ Agregar Transporte</button>
+            </div>
+            
             <!-- TOTALES DEL APU -->
             <div style="background: #d4edda; padding: 15px; border-radius: 8px; margin-top: 20px; text-align: right;">
                 <p><strong>SUBTOTAL EQUIPOS:</strong> $ <span id="subtotal-equipos">0.00</span></p>
                 <p><strong>SUBTOTAL MANO DE OBRA:</strong> $ <span id="subtotal-labors">0.00</span></p>
                 <p><strong>SUBTOTAL MATERIALES:</strong> $ <span id="subtotal-materiales">0.00</span></p>
+                <p><strong>SUBTOTAL TRANSPORTE:</strong> $ <span id="subtotal-transportes">0.00</span></p>
                 <hr style="margin: 10px 0;">
                 <p><strong>TOTAL COSTO DIRECTO:</strong> $ <span id="total-directo">0.00</span></p>
                 <p><strong>INDIRECTOS (20%):</strong> $ <span id="indirectos">0.00</span></p>
@@ -139,7 +169,7 @@
         });
     }
     
-    // Función para calcular total de equipo
+    // Calcular total equipo
     function calcularTotalEquipo(row) {
         const cantidad = parseFloat(row.querySelector(".equipo-cantidad").value) || 0;
         const precio = parseFloat(row.querySelector(".equipo-precio").value) || 0;
@@ -149,6 +179,7 @@
         return total;
     }
     
+    // Calcular total labor
     function calcularTotalLabor(row) {
         const cantidad = parseFloat(row.querySelector(".labor-cantidad").value) || 0;
         const precio = parseFloat(row.querySelector(".labor-precio").value) || 0;
@@ -158,6 +189,7 @@
         return total;
     }
     
+    // Calcular total material
     function calcularTotalMaterial(row) {
         const cantidad = parseFloat(row.querySelector(".material-cantidad").value) || 0;
         const precio = parseFloat(row.querySelector(".material-precio").value) || 0;
@@ -166,8 +198,19 @@
         return total;
     }
     
+    // Calcular total transporte
+    function calcularTotalTransporte(row) {
+        const cantidad = parseFloat(row.querySelector(".transporte-cantidad").value) || 0;
+        const precio = parseFloat(row.querySelector(".transporte-precio").value) || 0;
+        const rendimiento = parseFloat(row.querySelector(".transporte-rendimiento").value) || 1;
+        const total = cantidad * precio * rendimiento;
+        row.querySelector(".transporte-total").value = total.toFixed(2);
+        return total;
+    }
+    
+    // Recalcular todos los totales
     function recalcularTotalesGenerales() {
-        let totalEquipos = 0, totalLabors = 0, totalMateriales = 0;
+        let totalEquipos = 0, totalLabors = 0, totalMateriales = 0, totalTransportes = 0;
         
         document.querySelectorAll(".equipo-row").forEach(row => {
             totalEquipos += parseFloat(row.querySelector(".equipo-total").value) || 0;
@@ -178,12 +221,16 @@
         document.querySelectorAll(".material-row").forEach(row => {
             totalMateriales += parseFloat(row.querySelector(".material-total").value) || 0;
         });
+        document.querySelectorAll(".transporte-row").forEach(row => {
+            totalTransportes += parseFloat(row.querySelector(".transporte-total").value) || 0;
+        });
         
         document.getElementById("subtotal-equipos").innerHTML = totalEquipos.toFixed(2);
         document.getElementById("subtotal-labors").innerHTML = totalLabors.toFixed(2);
         document.getElementById("subtotal-materiales").innerHTML = totalMateriales.toFixed(2);
+        document.getElementById("subtotal-transportes").innerHTML = totalTransportes.toFixed(2);
         
-        const totalDirecto = totalEquipos + totalLabors + totalMateriales;
+        const totalDirecto = totalEquipos + totalLabors + totalMateriales + totalTransportes;
         const indirectos = totalDirecto * 0.20;
         const totalGeneral = totalDirecto + indirectos;
         
@@ -196,6 +243,7 @@
         document.getElementById("total_cost").value = totalGeneral;
     }
     
+    // Configurar eventos equipo
     function configurarEventosEquipo(row) {
         const select = row.querySelector(".equipo-select");
         const cantidad = row.querySelector(".equipo-cantidad");
@@ -229,6 +277,7 @@
         calcularTotalEquipo(row);
     }
     
+    // Configurar eventos labor
     function configurarEventosLabor(row) {
         const select = row.querySelector(".labor-select");
         const cantidad = row.querySelector(".labor-cantidad");
@@ -262,6 +311,7 @@
         calcularTotalLabor(row);
     }
     
+    // Configurar eventos material
     function configurarEventosMaterial(row) {
         const select = row.querySelector(".material-select");
         const cantidad = row.querySelector(".material-cantidad");
@@ -289,12 +339,47 @@
         calcularTotalMaterial(row);
     }
     
+    // Configurar eventos transporte
+    function configurarEventosTransporte(row) {
+        const select = row.querySelector(".transporte-select");
+        const cantidad = row.querySelector(".transporte-cantidad");
+        const rendimiento = row.querySelector(".transporte-rendimiento");
+        const precio = row.querySelector(".transporte-precio");
+        const unidad = row.querySelector(".transporte-unidad");
+        
+        $(select).on('change', function() {
+            const option = select.options[select.selectedIndex];
+            unidad.value = option.getAttribute("data-unit") || "";
+            precio.value = option.getAttribute("data-price") || 0;
+            calcularTotalTransporte(row);
+            recalcularTotalesGenerales();
+        });
+        
+        cantidad.addEventListener("input", function() {
+            calcularTotalTransporte(row);
+            recalcularTotalesGenerales();
+        });
+        
+        rendimiento.addEventListener("input", function() {
+            calcularTotalTransporte(row);
+            recalcularTotalesGenerales();
+        });
+        
+        const removeBtn = row.querySelector(".remove-transporte");
+        if (removeBtn) {
+            removeBtn.addEventListener("click", function() { row.remove(); recalcularTotalesGenerales(); });
+        }
+        
+        calcularTotalTransporte(row);
+    }
+    
     // Configurar filas existentes
     document.querySelectorAll(".equipo-row").forEach(row => configurarEventosEquipo(row));
     document.querySelectorAll(".labor-row").forEach(row => configurarEventosLabor(row));
     document.querySelectorAll(".material-row").forEach(row => configurarEventosMaterial(row));
+    document.querySelectorAll(".transporte-row").forEach(row => configurarEventosTransporte(row));
     
-    let equipoIndex = 1, laborIndex = 1, materialIndex = 1;
+    let equipoIndex = 1, laborIndex = 1, materialIndex = 1, transporteIndex = 1;
     
     // Agregar equipo
     document.getElementById("add-equipo").addEventListener("click", function() {
@@ -377,6 +462,34 @@
         initSelect2(newRow);
         configurarEventosMaterial(newRow);
         materialIndex++;
+    });
+    
+    // Agregar transporte (usando transportes)
+    document.getElementById("add-transporte").addEventListener("click", function() {
+        const container = document.getElementById("transportes-container");
+        const newRow = document.createElement("div");
+        newRow.className = "transporte-row";
+        newRow.style = "margin-bottom: 10px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;";
+        newRow.innerHTML = `
+            <select name="transportes[${transporteIndex}][material_id]" style="flex: 2; padding: 8px;" class="transporte-select select2">
+                <option value="">🔍 Seleccione un transporte...</option>
+                <?php $__currentLoopData = $transportes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $transporte): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <option value="<?php echo e($transporte->id); ?>" data-price="<?php echo e($transporte->price); ?>" data-unit="<?php echo e($transporte->unit); ?>">
+                        <?php echo e($transporte->code); ?> - <?php echo e($transporte->name); ?> ($<?php echo e(number_format($transporte->price, 2)); ?>/<?php echo e($transporte->unit); ?>)
+                    </option>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            </select>
+            <input type="number" name="transportes[${transporteIndex}][quantity]" placeholder="📊 Cantidad" step="0.01" style="flex: 1; padding: 8px;" class="transporte-cantidad" value="0">
+            <input type="text" name="transportes[${transporteIndex}][unit]" placeholder="📏 Unidad" style="flex: 1; padding: 8px;" class="transporte-unidad" readonly>
+            <input type="number" name="transportes[${transporteIndex}][price]" placeholder="💰 Precio" step="0.01" style="flex: 1; padding: 8px;" class="transporte-precio" readonly>
+            <input type="number" name="transportes[${transporteIndex}][performance]" placeholder="⚙️ Rendimiento" step="0.01" style="flex: 1; padding: 8px;" class="transporte-rendimiento" value="1">
+            <input type="number" name="transportes[${transporteIndex}][total]" placeholder="💲 Total" step="0.01" style="flex: 1; padding: 8px; background:#e0e0e0;" class="transporte-total" readonly>
+            <button type="button" class="remove-transporte" style="background: #ef4444; color: white; border: none; padding: 8px 12px; cursor: pointer;">🗑️</button>
+        `;
+        container.appendChild(newRow);
+        initSelect2(newRow);
+        configurarEventosTransporte(newRow);
+        transporteIndex++;
     });
     
     // Inicializar Select2 en los elementos existentes

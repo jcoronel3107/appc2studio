@@ -7,6 +7,7 @@ use App\Http\Controllers\ApuController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\EquipmentController;
 use App\Http\Controllers\LaborController;
+use App\Http\Controllers\TransportController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -46,6 +47,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/apu/clonar/{id}', [ApuController::class, 'clone'])->name('apus.clone');
 Route::post('/apu/clonar/{id}', [ApuController::class, 'cloneStore'])->name('apus.clone.store');
 
+    // Rutas de Transporte
+Route::resource('transports', TransportController::class);
+Route::get('/transports-import', [TransportController::class, 'importForm'])->name('transports.import.form');
+Route::post('/transports-import', [TransportController::class, 'import'])->name('transports.import');
+Route::get('/transports-export', [TransportController::class, 'export'])->name('transports.export');                              
 
 
 

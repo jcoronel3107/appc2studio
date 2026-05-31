@@ -13,7 +13,8 @@ class AnalysisHeader extends Model
         'unit',
         'total_direct_cost',
         'indirect_cost',
-        'total_cost'
+        'total_cost',
+        'word_file',  // ← Agrega esta línea
     ];
     
     public function items(): HasMany

@@ -9,6 +9,12 @@
     <span style="color: #ccc;">|</span>
     <a href="<?php echo e(route('equipments.index')); ?>" style="color: #4b5563; text-decoration: none;">🖥️ Equipos</a>
     <span style="color: #ccc;">|</span>
+
+    <a href="<?php echo e(route('transports.index')); ?>" style="color: #4b5563; text-decoration: none;">🚚 Transporte</a>
+    <span style="color: #ccc;">|</span>
+
+
+
     <a href="<?php echo e(route('labors.index')); ?>" style="color: #4b5563; text-decoration: none;">👷 Mano de Obra</a>
     <span style="color: #ccc;">|</span>
     <a href="<?php echo e(url('/importar')); ?>" style="color: #4b5563; text-decoration: none;">📤 Importar APU</a>
