@@ -27,8 +27,8 @@
             <div style="margin-bottom: 30px;">
                 <h3>🖥️ EQUIPOS</h3>
                 <div id="equipos-container">
-                    <div class="equipo-row" style="margin-bottom: 10px; display: flex; gap: 10px; flex-wrap: wrap;">
-                        <select name="equipos[0][material_id]" style="flex: 2; padding: 8px;" class="equipo-select">
+                    <div class="equipo-row" style="margin-bottom: 10px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                        <select name="equipos[0][material_id]" style="flex: 2; padding: 8px;" class="equipo-select select2">
                             <option value="">🔍 Seleccione un equipo...</option>
                             <?php $__currentLoopData = $equipos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $equipo): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <option value="<?php echo e($equipo->id); ?>" data-price="<?php echo e($equipo->price); ?>" data-unit="<?php echo e($equipo->unit); ?>">
@@ -44,15 +44,15 @@
                         <button type="button" class="remove-equipo" style="background: #ef4444; color: white; border: none; padding: 8px 12px; cursor: pointer;">🗑️</button>
                     </div>
                 </div>
-                <button type="button" id="add-equipo" style="background: #3b82f6; color: white; border: none; padding: 8px 16px; margin-top: 10px;">➕ Agregar Equipo</button>
+                <button type="button" id="add-equipo" style="background: #3b82f6; color: white; border: none; padding: 8px 16px; margin-top: 10px; cursor: pointer;">➕ Agregar Equipo</button>
             </div>
             
             <!-- MANO DE OBRA -->
             <div style="margin-bottom: 30px;">
                 <h3>👷 MANO DE OBRA</h3>
                 <div id="labors-container">
-                    <div class="labor-row" style="margin-bottom: 10px; display: flex; gap: 10px; flex-wrap: wrap;">
-                        <select name="labors[0][labor_id]" style="flex: 2; padding: 8px;" class="labor-select">
+                    <div class="labor-row" style="margin-bottom: 10px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                        <select name="labors[0][labor_id]" style="flex: 2; padding: 8px;" class="labor-select select2">
                             <option value="">🔍 Seleccione un trabajador...</option>
                             <?php $__currentLoopData = $labors; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $labor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <option value="<?php echo e($labor->id); ?>" data-price="<?php echo e($labor->hourly_rate); ?>" data-unit="<?php echo e($labor->unit); ?>">
@@ -68,15 +68,15 @@
                         <button type="button" class="remove-labor" style="background: #ef4444; color: white; border: none; padding: 8px 12px; cursor: pointer;">🗑️</button>
                     </div>
                 </div>
-                <button type="button" id="add-labor" style="background: #3b82f6; color: white; border: none; padding: 8px 16px; margin-top: 10px;">➕ Agregar Trabajador</button>
+                <button type="button" id="add-labor" style="background: #3b82f6; color: white; border: none; padding: 8px 16px; margin-top: 10px; cursor: pointer;">➕ Agregar Trabajador</button>
             </div>
             
             <!-- MATERIALES -->
             <div style="margin-bottom: 30px;">
                 <h3>🧱 MATERIALES</h3>
                 <div id="materiales-container">
-                    <div class="material-row" style="margin-bottom: 10px; display: flex; gap: 10px; flex-wrap: wrap;">
-                        <select name="materiales[0][material_id]" style="flex: 2; padding: 8px;" class="material-select">
+                    <div class="material-row" style="margin-bottom: 10px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                        <select name="materiales[0][material_id]" style="flex: 2; padding: 8px;" class="material-select select2">
                             <option value="">🔍 Seleccione un material...</option>
                             <?php $__currentLoopData = $materiales; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $material): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <option value="<?php echo e($material->id); ?>" data-price="<?php echo e($material->price); ?>" data-unit="<?php echo e($material->unit); ?>">
@@ -91,7 +91,7 @@
                         <button type="button" class="remove-material" style="background: #ef4444; color: white; border: none; padding: 8px 12px; cursor: pointer;">🗑️</button>
                     </div>
                 </div>
-                <button type="button" id="add-material" style="background: #3b82f6; color: white; border: none; padding: 8px 16px; margin-top: 10px;">➕ Agregar Material</button>
+                <button type="button" id="add-material" style="background: #3b82f6; color: white; border: none; padding: 8px 16px; margin-top: 10px; cursor: pointer;">➕ Agregar Material</button>
             </div>
             
             <!-- TOTALES DEL APU -->
@@ -109,13 +109,37 @@
             <input type="hidden" name="indirect_cost" id="indirect_cost" value="0">
             <input type="hidden" name="total_cost" id="total_cost" value="0">
             
-            <button type="submit" style="background: #22c55e; color: white; padding: 10px 20px; border: none; cursor: pointer; margin-top: 20px;">💾 Guardar APU</button>
-            <a href="<?php echo e(route('apus.index')); ?>">Cancelar</a>
+            <div style="display: flex; gap: 15px; margin-top: 20px;">
+                <button type="submit" style="background: #22c55e; color: white; padding: 10px 20px; border: none; cursor: pointer; border-radius: 4px;">💾 Guardar APU</button>
+                <a href="<?php echo e(route('apus.index')); ?>" style="background: #6c757d; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px;">Cancelar</a>
+            </div>
         </form>
     </div>
 </div>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 <script>
+    // Inicializar Select2
+    function initSelect2(container) {
+        $(container).find('.select2').each(function() {
+            if (!$(this).data('select2')) {
+                $(this).select2({
+                    width: '100%',
+                    placeholder: '🔍 Escribe para buscar...',
+                    allowClear: true,
+                    language: {
+                        searching: function() { return "Buscando..."; },
+                        noResults: function() { return "No se encontraron resultados"; }
+                    }
+                });
+            }
+        });
+    }
+    
+    // Función para calcular total de equipo
     function calcularTotalEquipo(row) {
         const cantidad = parseFloat(row.querySelector(".equipo-cantidad").value) || 0;
         const precio = parseFloat(row.querySelector(".equipo-precio").value) || 0;
@@ -143,18 +167,14 @@
     }
     
     function recalcularTotalesGenerales() {
-        let totalEquipos = 0;
-        let totalLabors = 0;
-        let totalMateriales = 0;
+        let totalEquipos = 0, totalLabors = 0, totalMateriales = 0;
         
         document.querySelectorAll(".equipo-row").forEach(row => {
             totalEquipos += parseFloat(row.querySelector(".equipo-total").value) || 0;
         });
-        
         document.querySelectorAll(".labor-row").forEach(row => {
             totalLabors += parseFloat(row.querySelector(".labor-total").value) || 0;
         });
-        
         document.querySelectorAll(".material-row").forEach(row => {
             totalMateriales += parseFloat(row.querySelector(".material-total").value) || 0;
         });
@@ -179,11 +199,11 @@
     function configurarEventosEquipo(row) {
         const select = row.querySelector(".equipo-select");
         const cantidad = row.querySelector(".equipo-cantidad");
-        const precio = row.querySelector(".equipo-precio");
         const rendimiento = row.querySelector(".equipo-rendimiento");
+        const precio = row.querySelector(".equipo-precio");
         const unidad = row.querySelector(".equipo-unidad");
         
-        select.addEventListener("change", function() {
+        $(select).on('change', function() {
             const option = select.options[select.selectedIndex];
             unidad.value = option.getAttribute("data-unit") || "";
             precio.value = option.getAttribute("data-price") || 0;
@@ -200,16 +220,23 @@
             calcularTotalEquipo(row);
             recalcularTotalesGenerales();
         });
+        
+        const removeBtn = row.querySelector(".remove-equipo");
+        if (removeBtn) {
+            removeBtn.addEventListener("click", function() { row.remove(); recalcularTotalesGenerales(); });
+        }
+        
+        calcularTotalEquipo(row);
     }
     
     function configurarEventosLabor(row) {
         const select = row.querySelector(".labor-select");
         const cantidad = row.querySelector(".labor-cantidad");
-        const precio = row.querySelector(".labor-precio");
         const rendimiento = row.querySelector(".labor-rendimiento");
+        const precio = row.querySelector(".labor-precio");
         const unidad = row.querySelector(".labor-unidad");
         
-        select.addEventListener("change", function() {
+        $(select).on('change', function() {
             const option = select.options[select.selectedIndex];
             unidad.value = option.getAttribute("data-unit") || "";
             precio.value = option.getAttribute("data-price") || 0;
@@ -226,6 +253,13 @@
             calcularTotalLabor(row);
             recalcularTotalesGenerales();
         });
+        
+        const removeBtn = row.querySelector(".remove-labor");
+        if (removeBtn) {
+            removeBtn.addEventListener("click", function() { row.remove(); recalcularTotalesGenerales(); });
+        }
+        
+        calcularTotalLabor(row);
     }
     
     function configurarEventosMaterial(row) {
@@ -234,7 +268,7 @@
         const precio = row.querySelector(".material-precio");
         const unidad = row.querySelector(".material-unidad");
         
-        select.addEventListener("change", function() {
+        $(select).on('change', function() {
             const option = select.options[select.selectedIndex];
             unidad.value = option.getAttribute("data-unit") || "";
             precio.value = option.getAttribute("data-price") || 0;
@@ -246,23 +280,30 @@
             calcularTotalMaterial(row);
             recalcularTotalesGenerales();
         });
+        
+        const removeBtn = row.querySelector(".remove-material");
+        if (removeBtn) {
+            removeBtn.addEventListener("click", function() { row.remove(); recalcularTotalesGenerales(); });
+        }
+        
+        calcularTotalMaterial(row);
     }
     
+    // Configurar filas existentes
     document.querySelectorAll(".equipo-row").forEach(row => configurarEventosEquipo(row));
     document.querySelectorAll(".labor-row").forEach(row => configurarEventosLabor(row));
     document.querySelectorAll(".material-row").forEach(row => configurarEventosMaterial(row));
     
-    let equipoIndex = 1;
-    let laborIndex = 1;
-    let materialIndex = 1;
+    let equipoIndex = 1, laborIndex = 1, materialIndex = 1;
     
+    // Agregar equipo
     document.getElementById("add-equipo").addEventListener("click", function() {
         const container = document.getElementById("equipos-container");
         const newRow = document.createElement("div");
         newRow.className = "equipo-row";
-        newRow.style = "margin-bottom: 10px; display: flex; gap: 10px; flex-wrap: wrap;";
+        newRow.style = "margin-bottom: 10px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;";
         newRow.innerHTML = `
-            <select name="equipos[${equipoIndex}][material_id]" style="flex: 2; padding: 8px;" class="equipo-select">
+            <select name="equipos[${equipoIndex}][material_id]" style="flex: 2; padding: 8px;" class="equipo-select select2">
                 <option value="">🔍 Seleccione un equipo...</option>
                 <?php $__currentLoopData = $equipos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $equipo): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <option value="<?php echo e($equipo->id); ?>" data-price="<?php echo e($equipo->price); ?>" data-unit="<?php echo e($equipo->unit); ?>">
@@ -278,21 +319,19 @@
             <button type="button" class="remove-equipo" style="background: #ef4444; color: white; border: none; padding: 8px 12px; cursor: pointer;">🗑️</button>
         `;
         container.appendChild(newRow);
+        initSelect2(newRow);
         configurarEventosEquipo(newRow);
-        newRow.querySelector(".remove-equipo").addEventListener("click", function() {
-            newRow.remove();
-            recalcularTotalesGenerales();
-        });
         equipoIndex++;
     });
     
+    // Agregar mano de obra
     document.getElementById("add-labor").addEventListener("click", function() {
         const container = document.getElementById("labors-container");
         const newRow = document.createElement("div");
         newRow.className = "labor-row";
-        newRow.style = "margin-bottom: 10px; display: flex; gap: 10px; flex-wrap: wrap;";
+        newRow.style = "margin-bottom: 10px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;";
         newRow.innerHTML = `
-            <select name="labors[${laborIndex}][labor_id]" style="flex: 2; padding: 8px;" class="labor-select">
+            <select name="labors[${laborIndex}][labor_id]" style="flex: 2; padding: 8px;" class="labor-select select2">
                 <option value="">🔍 Seleccione un trabajador...</option>
                 <?php $__currentLoopData = $labors; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $labor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <option value="<?php echo e($labor->id); ?>" data-price="<?php echo e($labor->hourly_rate); ?>" data-unit="<?php echo e($labor->unit); ?>">
@@ -308,21 +347,19 @@
             <button type="button" class="remove-labor" style="background: #ef4444; color: white; border: none; padding: 8px 12px; cursor: pointer;">🗑️</button>
         `;
         container.appendChild(newRow);
+        initSelect2(newRow);
         configurarEventosLabor(newRow);
-        newRow.querySelector(".remove-labor").addEventListener("click", function() {
-            newRow.remove();
-            recalcularTotalesGenerales();
-        });
         laborIndex++;
     });
     
+    // Agregar material
     document.getElementById("add-material").addEventListener("click", function() {
         const container = document.getElementById("materiales-container");
         const newRow = document.createElement("div");
         newRow.className = "material-row";
-        newRow.style = "margin-bottom: 10px; display: flex; gap: 10px; flex-wrap: wrap;";
+        newRow.style = "margin-bottom: 10px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;";
         newRow.innerHTML = `
-            <select name="materiales[${materialIndex}][material_id]" style="flex: 2; padding: 8px;" class="material-select">
+            <select name="materiales[${materialIndex}][material_id]" style="flex: 2; padding: 8px;" class="material-select select2">
                 <option value="">🔍 Seleccione un material...</option>
                 <?php $__currentLoopData = $materiales; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $material): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <option value="<?php echo e($material->id); ?>" data-price="<?php echo e($material->price); ?>" data-unit="<?php echo e($material->unit); ?>">
@@ -337,12 +374,14 @@
             <button type="button" class="remove-material" style="background: #ef4444; color: white; border: none; padding: 8px 12px; cursor: pointer;">🗑️</button>
         `;
         container.appendChild(newRow);
+        initSelect2(newRow);
         configurarEventosMaterial(newRow);
-        newRow.querySelector(".remove-material").addEventListener("click", function() {
-            newRow.remove();
-            recalcularTotalesGenerales();
-        });
         materialIndex++;
+    });
+    
+    // Inicializar Select2 en los elementos existentes
+    $(document).ready(function() {
+        initSelect2(document);
     });
     
     recalcularTotalesGenerales();
