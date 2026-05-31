@@ -70,16 +70,16 @@ class LaborController extends Controller
 
     public function import(Request $request)
     {
-        $request->validate([
-            'file' => 'required|mimes:xlsx,xls,csv'
-        ]);
+    $request->validate([
+        'file' => 'required|mimes:xlsx,xls,csv'
+    ]);
 
-        try {
-            Excel::import(new LaborImport, $request->file('file'));
-            return redirect()->route('labors.index')->with('success', 'Datos importados exitosamente');
-        } catch (\Exception $e) {
-            return back()->with('error', 'Error al importar: ' . $e->getMessage());
-        }
+    try {
+        Excel::import(new LaborImport, $request->file('file'));
+        return redirect()->route('labors.index')->with('success', 'Mano de obra importada exitosamente');
+    } catch (\Exception $e) {
+        return back()->with('error', 'Error al importar: ' . $e->getMessage());
+    }
     }
 
     public function export()

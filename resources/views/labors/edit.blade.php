@@ -18,11 +18,22 @@ echo '@extends("layouts.app")
                 <label>Categoría:</label>
                 <select name="category" style="width:100%; padding: 8px;">
                     <option value="">Seleccione...</option>
-                    <option value="Operario" {{ $labor->category == "Operario" ? "selected" : "" }}>Operario</option>
-                    <option value="Oficial" {{ $labor->category == "Oficial" ? "selected" : "" }}>Oficial</option>
-                    <option value="Ayudante" {{ $labor->category == "Ayudante" ? "selected" : "" }}>Ayudante</option>
-                    <option value="Capataz" {{ $labor->category == "Capataz" ? "selected" : "" }}>Capataz</option>
-                    <option value="Supervisor" {{ $labor->category == "Supervisor" ? "selected" : "" }}>Supervisor</option>
+                    <option value="ESTRUCTURA OCUPACIONAL E2 (PRIMERA Y SEGUNDA CATEGORÍA)">ESTRUCTURA OCUPACIONAL E2 (PRIMERA Y SEGUNDA CATEGORÍA)</option>
+                    <option value="ESTRUCTURA OCUPACIONAL D2">ESTRUCTURA OCUPACIONAL D2</option>
+                    <option value="ESTRUCTURA OCUPACIONAL C2">ESTRUCTURA OCUPACIONAL C2</option>
+                    <option value="ESTRUCTURA OCUPACIONAL C1">ESTRUCTURA OCUPACIONAL C1</option>
+                    <option value="ESTRUCTURA OCUPACIONAL B3">ESTRUCTURA OCUPACIONAL B3</option>
+                    <option value="ESTRUCTURA OCUPACIONAL B1">ESTRUCTURA OCUPACIONAL B1</option>
+                    <option value="LABORATORIO">LABORATORIO</option>
+                    <option value="TOPOGRAFÍA">TOPOGRAFÍA</option>
+                    <option value="DIBUJANTES">DIBUJANTES</option>
+                    <option value="ESTRUCTURA OCUPACIONAL C2 (GRUPO A)">ESTRUCTURA OCUPACIONAL C2 (GRUPO A)</option>
+                    <option value="ESTRUCTURA OCUPACIONAL C1 (Estr,Oc,C1) SECCION C: SIN TÍTULO">ESTRUCTURA OCUPACIONAL C1 (Estr,Oc,C1) SECCION C: SIN TÍTULO</option>
+                    <option value="ESTRUCTURA OCUPACIONAL C1 (Estr,Oc,C1) CHOFERES SECCION C: SIN TÍTULO">ESTRUCTURA OCUPACIONAL C1 (Estr,Oc,C1) CHOFERES SECCION C: SIN TÍTULO</option>
+                    <option value="ESTRUCTURA OCUPACIONAL E2">ESTRUCTURA OCUPACIONAL E2</option>
+                    <option value="ESTRUCTURA OCUPACIONAL C1 (GRUPO I)">ESTRUCTURA OCUPACIONAL C1 (GRUPO I)</option>
+                    <option value="ESTRUCTURA OCUPACIONAL C2 (GRUPO II)">ESTRUCTURA OCUPACIONAL C2 (GRUPO II)</option>
+                    <option value="OPERADORES Y MECÁNICOS DE EQUIPO PESADO Y CAMINERO DE EXCAVACIÓN, ">OPERADORES Y MECÁNICOS DE EQUIPO PESADO Y CAMINERO DE EXCAVACIÓN, </option>
                 </select>
             </div>
             <div style="margin-bottom: 15px;">
