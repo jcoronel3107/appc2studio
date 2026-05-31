@@ -9,9 +9,16 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class EquipmentController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $equipments = Equipment::latest()->paginate(20);
+        $query = Equipment::query();
+        
+        if ($request->has('search') && $request->search != '') {
+            $query->where('name', 'LIKE', '%' . $request->search . '%');
+        }
+        
+        $equipments = $query->latest()->paginate(20);
+        
         return view('equipments.index', compact('equipments'));
     }
 

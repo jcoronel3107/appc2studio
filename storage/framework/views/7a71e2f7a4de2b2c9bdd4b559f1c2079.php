@@ -8,7 +8,7 @@
     <title><?php echo e(config('app.name', 'Laravel')); ?></title>
     <link rel=\"preconnect\" href=\"https://fonts.bunny.net\">
     <link href=\"https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap\" rel=\"stylesheet\" />
-    <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
+    
     <style>.hidden { display: none; }</style>
 </head>
 <body class=\"font-sans antialiased\">

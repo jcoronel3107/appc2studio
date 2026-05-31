@@ -9,9 +9,16 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class LaborController extends Controller
 {
-    public function index()
+     public function index(Request $request)
     {
-        $labors = Labor::latest()->paginate(20);
+        $query = Labor::query();
+        
+        if ($request->has('search') && $request->search != '') {
+            $query->where('name', 'LIKE', '%' . $request->search . '%');
+        }
+        
+        $labors = $query->latest()->paginate(20);
+        
         return view('labors.index', compact('labors'));
     }
 

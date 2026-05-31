@@ -8,7 +8,7 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
     <link rel=\"preconnect\" href=\"https://fonts.bunny.net\">
     <link href=\"https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap\" rel=\"stylesheet\" />
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    {{-- @vite(['resources/css/app.css', 'resources/js/app.js']) --}}
     <style>.hidden { display: none; }</style>
 </head>
 <body class=\"font-sans antialiased\">

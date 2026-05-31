@@ -11,7 +11,25 @@ echo '
         <?php if(session("success")): ?>
             <div style="background: #d4edda; padding: 10px; margin: 10px 0;">✅ <?php echo e(session("success")); ?></div>
         <?php endif; ?>
-        
+        <!-- Buscador -->
+        <div style="margin: 20px 0; display: flex; gap: 10px;">
+            <form method="GET" action="<?php echo e(route('labors.index')); ?>" style="flex: 1; display: flex; gap: 10px;">
+                <input type="text" name="search" placeholder="🔍 Buscar por nombre..." value="<?php echo e(request('search')); ?>" style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                <button type="submit" style="background: #3b82f6; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">Buscar</button>
+                <?php if(request('search')): ?>
+                    <a href="<?php echo e(route('labors.index')); ?>" style="background: #6c757d; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px;">Limpiar</a>
+                <?php endif; ?>
+            </form>
+        </div>
+
+        <?php if(request('search')): ?>
+            <div style="background: #e0f2fe; padding: 10px; margin-bottom: 15px; border-radius: 4px;">
+                Resultados para: <strong>"<?php echo e(request('search')); ?>"</strong> - <?php echo e($labors->total()); ?> encontrados
+            </div>
+        <?php endif; ?>
+
+
+
         <table border="1" style="width: 100%; margin-top: 20px; border-collapse: collapse;">
             <thead>
                 <tr>
@@ -44,7 +62,10 @@ echo '
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </tbody>
         </table>
-        <div style="margin-top: 20px;"><?php echo e($labors->links()); ?></div>
+        <div class="pagination-container" style="margin-top: 20px; text-align: center;">
+            <?php echo e($labors->links()); ?>
+
+        </div>
     </div>
 </div>
 <?php $__env->stopSection(); ?>' > resources\views\labors\index.blade.php

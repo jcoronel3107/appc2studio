@@ -9,9 +9,20 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class MaterialController extends Controller
 {
-    public function index()
+     public function index(Request $request)
     {
-        $materials = Material::latest()->paginate(20);
+        $query = Material::query();
+        
+        if ($request->has('search') && $request->search != '') {
+            $query->where('name', 'LIKE', '%' . $request->search . '%');
+        }
+        
+        $materials = $query->latest()->paginate(20);
+        
+        if ($request->ajax()) {
+            return view('materials.partials.table', compact('materials'))->render();
+        }
+        
         return view('materials.index', compact('materials'));
     }
 

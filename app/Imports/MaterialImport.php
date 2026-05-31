@@ -12,11 +12,12 @@ class MaterialImport implements ToModel, WithHeadingRow, WithValidation
     public function model(array $row)
     {
         return new Material([
-            'code' => $row['codigo'] ?? $row['code'],
-            'name' => $row['nombre'] ?? $row['name'],
-            'unit' => $row['unidad'] ?? $row['unit'],
-            'price' => $row['precio'] ?? $row['price'],
+            'code' => $row['codigo'] ?? $row['code'] ?? null,
+            'name' => $row['nombre'] ?? $row['name'] ?? null,
+            'unit' => $row['unidad'] ?? $row['unit'] ?? null,
+            'price' => floatval($row['precio'] ?? $row['price'] ?? 0),
             'category' => $row['categoria'] ?? $row['category'] ?? null,
+            'termino' => $row['termino'] ?? null,
             'description' => $row['descripcion'] ?? $row['description'] ?? null,
         ]);
     }
