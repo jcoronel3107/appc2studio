@@ -122,10 +122,13 @@ echo '<!DOCTYPE html>
         </div>
         @endif
         
+        <!-- TOTALES -->
         <div class="totals">
             <p><strong>TOTAL COSTO DIRECTO:</strong> $ {{ number_format($apu->total_direct_cost ?? 0, 2) }}</p>
-            <p><strong>INDIRECTOS (20%):</strong> $ {{ number_format($apu->indirect_cost ?? 0, 2) }}</p>
-            <p class="grand-total"><strong>COSTO TOTAL:</strong> $ {{ number_format($apu->total_cost ?? 0, 2) }}</p>
+            <p><strong>INDIRECTOS ({{ $apu->indirect_percentage ?? 20 }}%):</strong> $ {{ number_format($apu->indirect_cost ?? 0, 2) }}</p>
+            <p><strong>INDIRECTOS ({{ $apu->indirect_percentage ?? 20 }}%):</strong> $ {{ number_format($apu->indirect_cost ?? 0, 2) }}</p>
+            <p class="grand-total"><strong>COSTO TOTAL DEL RUBRO:</strong> $ {{ number_format($apu->total_cost ?? 0, 2) }}</p>
+            <p><strong>VALOR OFERTADO:</strong> $ {{ number_format($apu->total_cost ?? 0, 2) }}</p>
         </div>
     </div>
 </body>

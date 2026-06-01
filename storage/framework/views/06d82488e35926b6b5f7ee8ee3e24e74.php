@@ -99,7 +99,7 @@
                 <button type="button" id="add-material" style="background: #3b82f6; color: white; border: none; padding: 8px 16px; margin-top: 10px; cursor: pointer;">➕ Agregar Material</button>
             </div>
             
-            <!-- TRANSPORTE (usando tabla transports) -->
+            <!-- TRANSPORTE -->
             <div style="margin-bottom: 30px;">
                 <h3>🚚 TRANSPORTE</h3>
                 <div id="transportes-container">
@@ -131,13 +131,22 @@
                 <p><strong>SUBTOTAL TRANSPORTE:</strong> $ <span id="subtotal-transportes">0.00</span></p>
                 <hr style="margin: 10px 0;">
                 <p><strong>TOTAL COSTO DIRECTO:</strong> $ <span id="total-directo">0.00</span></p>
-                <p><strong>INDIRECTOS (20%):</strong> $ <span id="indirectos">0.00</span></p>
+                
+                <!-- Indirectos editable -->
+                <div style="display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin: 10px 0;">
+                    <p><strong>INDIRECTOS:</strong></p>
+                    <input type="number" id="indirectos-porcentaje" value="20" step="0.5" min="0" max="100" style="width: 70px; padding: 5px; text-align: center;"> 
+                    <p><strong>% = $ <span id="indirectos">0.00</span></strong></p>
+                </div>
+                
+                <hr style="margin: 10px 0;">
                 <p style="font-size: 20px; font-weight: bold;"><strong>COSTO TOTAL DEL RUBRO:</strong> $ <span id="total-general">0.00</span></p>
             </div>
             
             <input type="hidden" name="total_direct_cost" id="total_direct_cost" value="0">
             <input type="hidden" name="indirect_cost" id="indirect_cost" value="0">
             <input type="hidden" name="total_cost" id="total_cost" value="0">
+            <input type="hidden" name="indirect_percentage" id="indirect_percentage" value="20">
             
             <div style="display: flex; gap: 15px; margin-top: 20px;">
                 <button type="submit" style="background: #22c55e; color: white; padding: 10px 20px; border: none; cursor: pointer; border-radius: 4px;">💾 Guardar APU</button>
@@ -208,7 +217,7 @@
         return total;
     }
     
-    // Recalcular todos los totales
+    // Recalcular todos los totales con porcentaje variable
     function recalcularTotalesGenerales() {
         let totalEquipos = 0, totalLabors = 0, totalMateriales = 0, totalTransportes = 0;
         
@@ -231,7 +240,8 @@
         document.getElementById("subtotal-transportes").innerHTML = totalTransportes.toFixed(2);
         
         const totalDirecto = totalEquipos + totalLabors + totalMateriales + totalTransportes;
-        const indirectos = totalDirecto * 0.20;
+        const porcentaje = parseFloat(document.getElementById("indirectos-porcentaje").value) || 0;
+        const indirectos = totalDirecto * (porcentaje / 100);
         const totalGeneral = totalDirecto + indirectos;
         
         document.getElementById("total-directo").innerHTML = totalDirecto.toFixed(2);
@@ -241,6 +251,7 @@
         document.getElementById("total_direct_cost").value = totalDirecto;
         document.getElementById("indirect_cost").value = indirectos;
         document.getElementById("total_cost").value = totalGeneral;
+        document.getElementById("indirect_percentage").value = porcentaje;
     }
     
     // Configurar eventos equipo
@@ -379,6 +390,14 @@
     document.querySelectorAll(".material-row").forEach(row => configurarEventosMaterial(row));
     document.querySelectorAll(".transporte-row").forEach(row => configurarEventosTransporte(row));
     
+    // Agregar evento al campo de porcentaje
+    const porcentajeInput = document.getElementById("indirectos-porcentaje");
+    if (porcentajeInput) {
+        porcentajeInput.addEventListener("input", function() {
+            recalcularTotalesGenerales();
+        });
+    }
+    
     let equipoIndex = 1, laborIndex = 1, materialIndex = 1, transporteIndex = 1;
     
     // Agregar equipo
@@ -464,7 +483,7 @@
         materialIndex++;
     });
     
-    // Agregar transporte (usando transportes)
+    // Agregar transporte
     document.getElementById("add-transporte").addEventListener("click", function() {
         const container = document.getElementById("transportes-container");
         const newRow = document.createElement("div");
@@ -484,6 +503,7 @@
             <input type="number" name="transportes[${transporteIndex}][price]" placeholder="💰 Precio" step="0.01" style="flex: 1; padding: 8px;" class="transporte-precio" readonly>
             <input type="number" name="transportes[${transporteIndex}][performance]" placeholder="⚙️ Rendimiento" step="0.01" style="flex: 1; padding: 8px;" class="transporte-rendimiento" value="1">
             <input type="number" name="transportes[${transporteIndex}][total]" placeholder="💲 Total" step="0.01" style="flex: 1; padding: 8px; background:#e0e0e0;" class="transporte-total" readonly>
+            <input type="hidden" name="indirect_percentage" id="indirect_percentage" value="20">
             <button type="button" class="remove-transporte" style="background: #ef4444; color: white; border: none; padding: 8px 12px; cursor: pointer;">🗑️</button>
         `;
         container.appendChild(newRow);

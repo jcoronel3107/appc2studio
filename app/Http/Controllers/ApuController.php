@@ -6,12 +6,10 @@ use App\Models\AnalysisHeader;
 use App\Models\AnalysisItem;
 use App\Models\Material;
 use App\Models\Equipment;
+use App\Models\Labor;
+use App\Models\Transport;
 use Illuminate\Http\Request;
-use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\ApuFullExport;
-use App\Exports\ApuSummaryExport;
-use App\Models\Labor; // Agregar al inicio del controlador
-use App\Models\Transport; // Agregar al inicio del controlador
+use Illuminate\Support\Facades\Storage;
 
 class ApuController extends Controller
 {
@@ -38,6 +36,7 @@ class ApuController extends Controller
         'code' => $request->code,
         'name' => $request->name,
         'unit' => $request->unit,
+        'indirect_percentage' => $request->indirect_percentage ?? 20, // Agrega esta línea
     ]);
     
     // Guardar archivo Word
@@ -134,6 +133,7 @@ class ApuController extends Controller
         'total_direct_cost' => $request->total_direct_cost,
         'indirect_cost' => $request->indirect_cost,
         'total_cost' => $request->total_cost,
+        'indirect_percentage' => $request->indirect_percentage ?? 20, // Agrega esta línea
     ]);
     
     return redirect()->route('apus.index')->with('success', 'APU creado exitosamente');
@@ -147,41 +147,140 @@ class ApuController extends Controller
     }
     
     public function edit($id)
-    {
-        $apu = AnalysisHeader::with("items")->findOrFail($id);
-        $materiales = Material::orderBy("name")->get();
-        $equipos = Equipment::orderBy("name")->get();
-        return view("apus.edit", compact("apu", "materiales", "equipos"));
+{
+    $apu = AnalysisHeader::with('items')->findOrFail($id);
+    $materiales = Material::orderBy('name')->get();
+    $equipos = Equipment::orderBy('name')->get();
+    $labors = Labor::orderBy('name')->get();
+    $transportes = Transport::orderBy('name')->get();
+    
+    return view('apus.edit', compact('apu', 'materiales', 'equipos', 'labors', 'transportes'));
+}
+    
+   public function update(Request $request, $id)
+{
+    $apu = AnalysisHeader::findOrFail($id);
+    
+    // Actualizar cabecera
+    $apu->update([
+        'code' => $request->code,
+        'name' => $request->name,
+        'unit' => $request->unit,
+        'total_direct_cost' => $request->total_direct_cost,
+        'indirect_cost' => $request->indirect_cost,
+        'total_cost' => $request->total_cost,
+        'indirect_percentage' => $request->indirect_percentage ?? 20,
+    ]);
+    
+    // Actualizar o crear equipos
+    if ($request->has('equipos')) {
+        foreach ($request->equipos as $key => $equipo) {
+            if (!empty($equipo['material_id']) && !empty($equipo['quantity'])) {
+                // Buscar si ya existe o crear uno nuevo
+                $item = AnalysisItem::where('analysis_header_id', $apu->id)
+                    ->where('section', 'equipment')
+                    ->where('description', $equipo['description'] ?? '')
+                    ->first();
+                
+                if (!$item) {
+                    $item = new AnalysisItem();
+                }
+                
+                $item->analysis_header_id = $apu->id;
+                $item->section = 'equipment';
+                $item->description = $equipo['description'] ?? '';
+                $item->quantity = $equipo['quantity'];
+                $item->unit_price = $equipo['price'] ?? 0;
+                $item->performance = $equipo['performance'] ?? 1;
+                $item->total = $equipo['total'] ?? ($equipo['quantity'] * ($equipo['price'] ?? 0) * ($equipo['performance'] ?? 1));
+                $item->row_position = $key;
+                $item->save();
+            }
+        }
     }
     
-    public function update(Request $request, $id)
-    {
-        $apu = AnalysisHeader::findOrFail($id);
-        
-        foreach ($request->items as $itemId => $itemData) {
-            $item = AnalysisItem::findOrFail($itemId);
-            $total = $itemData["quantity"] * $itemData["unit_price"];
-            
-            $item->update([
-                "description" => $itemData["description"],
-                "quantity" => $itemData["quantity"],
-                "unit_price" => $itemData["unit_price"],
-                "performance" => $itemData["performance"] ?? null,
-                "total" => $total,
-            ]);
+    // Actualizar o crear mano de obra
+    if ($request->has('labors')) {
+        foreach ($request->labors as $key => $labor) {
+            if (!empty($labor['labor_id']) && !empty($labor['quantity'])) {
+                $item = AnalysisItem::where('analysis_header_id', $apu->id)
+                    ->where('section', 'labor')
+                    ->where('description', $labor['description'] ?? '')
+                    ->first();
+                
+                if (!$item) {
+                    $item = new AnalysisItem();
+                }
+                
+                $item->analysis_header_id = $apu->id;
+                $item->section = 'labor';
+                $item->description = $labor['description'] ?? '';
+                $item->quantity = $labor['quantity'];
+                $item->unit_price = $labor['price'] ?? 0;
+                $item->performance = $labor['performance'] ?? 1;
+                $item->total = $labor['total'] ?? ($labor['quantity'] * ($labor['price'] ?? 0) * ($labor['performance'] ?? 1));
+                $item->row_position = $key;
+                $item->save();
+            }
         }
-        
-        $apu->update([
-            "code" => $request->code,
-            "name" => $request->name,
-            "unit" => $request->unit,
-            "total_direct_cost" => $request->total_direct_cost,
-            "indirect_cost" => $request->indirect_cost,
-            "total_cost" => $request->total_cost,
-        ]);
-        
-        return redirect()->route("apus.show", $apu->id)->with("success", "APU actualizado correctamente");
     }
+    
+    // Actualizar o crear materiales
+    if ($request->has('materiales')) {
+        foreach ($request->materiales as $key => $material) {
+            if (!empty($material['material_id']) && !empty($material['quantity'])) {
+                $item = AnalysisItem::where('analysis_header_id', $apu->id)
+                    ->where('section', 'material')
+                    ->where('description', $material['description'] ?? '')
+                    ->first();
+                
+                if (!$item) {
+                    $item = new AnalysisItem();
+                }
+                
+                $item->analysis_header_id = $apu->id;
+                $item->section = 'material';
+                $item->description = $material['description'] ?? '';
+                $item->quantity = $material['quantity'];
+                $item->unit_price = $material['price'] ?? 0;
+                $item->total = $material['total'] ?? ($material['quantity'] * ($material['price'] ?? 0));
+                $item->row_position = $key;
+                $item->save();
+            }
+        }
+    }
+    
+    // Actualizar o crear transporte
+    if ($request->has('transportes')) {
+        foreach ($request->transportes as $key => $transporte) {
+            if (!empty($transporte['material_id']) && !empty($transporte['quantity'])) {
+                $item = AnalysisItem::where('analysis_header_id', $apu->id)
+                    ->where('section', 'transport')
+                    ->where('description', $transporte['description'] ?? '')
+                    ->first();
+                
+                if (!$item) {
+                    $item = new AnalysisItem();
+                }
+                
+                $item->analysis_header_id = $apu->id;
+                $item->section = 'transport';
+                $item->description = $transporte['description'] ?? '';
+                $item->quantity = $transporte['quantity'];
+                $item->unit_price = $transporte['price'] ?? 0;
+                $item->performance = $transporte['performance'] ?? 1;
+                $item->total = $transporte['total'] ?? ($transporte['quantity'] * ($transporte['price'] ?? 0) * ($transporte['performance'] ?? 1));
+                $item->row_position = $key;
+                $item->save();
+            }
+        }
+    }
+    
+    // Eliminar items que ya no existen (opcional)
+    // Esto mantiene limpia la base de datos
+    
+    return redirect()->route('apus.show', $apu->id)->with('success', 'APU actualizado correctamente');
+}
     
     public function summary()
     {
