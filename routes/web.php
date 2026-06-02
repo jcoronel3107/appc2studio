@@ -8,6 +8,7 @@ use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\EquipmentController;
 use App\Http\Controllers\LaborController;
 use App\Http\Controllers\TransportController;
+use App\Http\Controllers\DashboardController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -18,7 +19,8 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 // Rutas protegidas (requieren autenticación)
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth'])->group(function () 
+{
     // Perfil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -53,7 +55,7 @@ Route::get('/transports-import', [TransportController::class, 'importForm'])->na
 Route::post('/transports-import', [TransportController::class, 'import'])->name('transports.import');
 Route::get('/transports-export', [TransportController::class, 'export'])->name('transports.export');                              
 
-
+Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 
     // Rutas para materiales y equipos
