@@ -25,6 +25,9 @@
     <span style="color: #ccc;">|</span>
     <a href="{{ route('apus.create') }}" style="color: #4b5563; text-decoration: none;">➕ Nuevo APU</a>
     <span style="color: #ccc;">|</span>
+    <a href="{{ route('budgets.index') }}" style="color: #4b5563; text-decoration: none;">📋 Presupuestos</a>
+    <span style="color: #ccc;">|</span>
+
     <!-- Menú de usuario -->
     <div style="position: relative;">
         <button onclick="toggleMenu()" style="background: none; border: none; cursor: pointer; color: #555;">

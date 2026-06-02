@@ -9,6 +9,7 @@ use App\Http\Controllers\EquipmentController;
 use App\Http\Controllers\LaborController;
 use App\Http\Controllers\TransportController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\BudgetController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -56,6 +57,9 @@ Route::post('/transports-import', [TransportController::class, 'import'])->name(
 Route::get('/transports-export', [TransportController::class, 'export'])->name('transports.export');                              
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
+
+// Rutas de Presupuestos
+Route::resource('budgets', BudgetController::class);
 
 
     // Rutas para materiales y equipos
