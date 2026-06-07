@@ -30,11 +30,19 @@ echo '<!DOCTYPE html>
         <h1>📄 Análisis de Precios Unitarios</h1>
         
         <div class="header-info">
-            <p><strong>Código:</strong> {{ $apu->code }}</p>
-            <p><strong>Rubro:</strong> {{ $apu->name }}</p>
-            <p><strong>Unidad:</strong> {{ $apu->unit }}</p>
-            <p><strong>Fecha:</strong> {{ $apu->created_at->format("d/m/Y H:i:s") }}</p>
-        </div>
+    <p><strong>Código:</strong> {{ $apu->code }}</p>
+    <p><strong>Rubro:</strong> {{ $apu->name }}</p>
+    <p><strong>Unidad:</strong> {{ $apu->unit }}</p>
+    <p><strong>Fecha:</strong> {{ $apu->created_at->format('d/m/Y H:i:s') }}</p>
+    
+    @if($apu->word_file)
+        <p><strong>📄 Documento:</strong> 
+            <a href="{{ Storage::url($apu->word_file) }}" target="_blank" style="color: #3b82f6; text-decoration: none; background: #e0e7ff; padding: 4px 8px; border-radius: 4px;">
+                📁 Ver archivo Word adjunto
+            </a>
+        </p>
+    @endif
+</div>
         
         @php $equipos = $apu->items->where("section", "equipment"); @endphp
         @if($equipos->count() > 0)
