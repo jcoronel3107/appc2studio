@@ -23,9 +23,3 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
-
-# Permitir acceso a archivos en storage
-<FilesMatch "\.(doc|docx|pdf|xls|xlsx|jpg|png|gif|jpeg)$">
-    Order Allow,Deny
-    Allow from all
-</FilesMatch>
