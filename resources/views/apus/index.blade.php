@@ -45,6 +45,66 @@
                 </tr>
                 @endforeach
             </tbody>
+             <!-- Paginación -->
+        @if($apus->hasPages())
+        <div style="margin-top: 30px; text-align: center;">
+            <div style="display: inline-flex; gap: 5px; flex-wrap: wrap; justify-content: center;">
+                {{-- Botón Primera --}}
+                @if($apus->onFirstPage())
+                    <span style="padding: 8px 12px; background: #e5e7eb; color: #9ca3af; border-radius: 4px;">« Primera</span>
+                @else
+                    <a href="{{ $apus->url(1) }}" style="padding: 8px 12px; background: #f0f0f0; color: #333; text-decoration: none; border-radius: 4px;">« Primera</a>
+                @endif
+                
+                {{-- Botón Anterior --}}
+                @if($apus->onFirstPage())
+                    <span style="padding: 8px 12px; background: #e5e7eb; color: #9ca3af; border-radius: 4px;">‹ Anterior</span>
+                @else
+                    <a href="{{ $apus->previousPageUrl() }}" style="padding: 8px 12px; background: #f0f0f0; color: #333; text-decoration: none; border-radius: 4px;">‹ Anterior</a>
+                @endif
+                
+                {{-- Números de página --}}
+                @php
+                    $start = max(1, $apus->currentPage() - 2);
+                    $end = min($apus->lastPage(), $apus->currentPage() + 2);
+                @endphp
+                
+                @if($start > 1)
+                    <span style="padding: 8px 12px;">...</span>
+                @endif
+                
+                @for($i = $start; $i <= $end; $i++)
+                    @if($i == $apus->currentPage())
+                        <span style="padding: 8px 12px; background: #3b82f6; color: white; border-radius: 4px;">{{ $i }}</span>
+                    @else
+                        <a href="{{ $apus->url($i) }}" style="padding: 8px 12px; background: #f0f0f0; color: #333; text-decoration: none; border-radius: 4px;">{{ $i }}</a>
+                    @endif
+                @endfor
+                
+                @if($end < $apus->lastPage())
+                    <span style="padding: 8px 12px;">...</span>
+                @endif
+                
+                {{-- Botón Siguiente --}}
+                @if($apus->hasMorePages())
+                    <a href="{{ $apus->nextPageUrl() }}" style="padding: 8px 12px; background: #f0f0f0; color: #333; text-decoration: none; border-radius: 4px;">Siguiente ›</a>
+                @else
+                    <span style="padding: 8px 12px; background: #e5e7eb; color: #9ca3af; border-radius: 4px;">Siguiente ›</span>
+                @endif
+                
+                {{-- Botón Última --}}
+                @if($apus->hasMorePages())
+                    <a href="{{ $apus->url($apus->lastPage()) }}" style="padding: 8px 12px; background: #f0f0f0; color: #333; text-decoration: none; border-radius: 4px;">Última »</a>
+                @else
+                    <span style="padding: 8px 12px; background: #e5e7eb; color: #9ca3af; border-radius: 4px;">Última »</span>
+                @endif
+            </div>
+            
+            <div style="margin-top: 15px; font-size: 14px; color: #666;">
+                Mostrando {{ $apus->firstItem() }} - {{ $apus->lastItem() }} de {{ $apus->total() }} apus
+            </div>
+        </div>
+        @endif
         </table>
     </div>
 </div>
