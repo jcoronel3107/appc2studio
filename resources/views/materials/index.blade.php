@@ -59,9 +59,69 @@ echo '@extends("layouts.app")
                 @endforeach
             </tbody>
         </table>
-        <div class="pagination-container" style="margin-top: 20px; text-align: center;">
-            {{ $materials->links() }}
+        <!-- Paginación -->
+        @if($materials->hasPages())
+        <div style="margin-top: 30px; text-align: center;">
+            <div style="display: inline-flex; gap: 5px; flex-wrap: wrap; justify-content: center;">
+                {{-- Botón Primera --}}
+                @if($materials->onFirstPage())
+                    <span style="padding: 8px 12px; background: #e5e7eb; color: #9ca3af; border-radius: 4px;">« Primera</span>
+                @else
+                    <a href="{{ $materials->url(1) }}" style="padding: 8px 12px; background: #f0f0f0; color: #333; text-decoration: none; border-radius: 4px;">« Primera</a>
+                @endif
+                
+                {{-- Botón Anterior --}}
+                @if($materials->onFirstPage())
+                    <span style="padding: 8px 12px; background: #e5e7eb; color: #9ca3af; border-radius: 4px;">‹ Anterior</span>
+                @else
+                    <a href="{{ $materials->previousPageUrl() }}" style="padding: 8px 12px; background: #f0f0f0; color: #333; text-decoration: none; border-radius: 4px;">‹ Anterior</a>
+                @endif
+                
+                {{-- Números de página --}}
+                @php
+                    $start = max(1, $materials->currentPage() - 2);
+                    $end = min($materials->lastPage(), $materials->currentPage() + 2);
+                @endphp
+                
+                @if($start > 1)
+                    <span style="padding: 8px 12px;">...</span>
+                @endif
+                
+                @for($i = $start; $i <= $end; $i++)
+                    @if($i == $materials->currentPage())
+                        <span style="padding: 8px 12px; background: #3b82f6; color: white; border-radius: 4px;">{{ $i }}</span>
+                    @else
+                        <a href="{{ $materials->url($i) }}" style="padding: 8px 12px; background: #f0f0f0; color: #333; text-decoration: none; border-radius: 4px;">{{ $i }}</a>
+                    @endif
+                @endfor
+                
+                @if($end < $materials->lastPage())
+                    <span style="padding: 8px 12px;">...</span>
+                @endif
+                
+                {{-- Botón Siguiente --}}
+                @if($materials->hasMorePages())
+                    <a href="{{ $materials->nextPageUrl() }}" style="padding: 8px 12px; background: #f0f0f0; color: #333; text-decoration: none; border-radius: 4px;">Siguiente ›</a>
+                @else
+                    <span style="padding: 8px 12px; background: #e5e7eb; color: #9ca3af; border-radius: 4px;">Siguiente ›</span>
+                @endif
+                
+                {{-- Botón Última --}}
+                @if($materials->hasMorePages())
+                    <a href="{{ $materials->url($materials->lastPage()) }}" style="padding: 8px 12px; background: #f0f0f0; color: #333; text-decoration: none; border-radius: 4px;">Última »</a>
+                @else
+                    <span style="padding: 8px 12px; background: #e5e7eb; color: #9ca3af; border-radius: 4px;">Última »</span>
+                @endif
+            </div>
+            
+            <div style="margin-top: 15px; font-size: 14px; color: #666;">
+                Mostrando {{ $materials->firstItem() }} - {{ $materials->lastItem() }} de {{ $materials->total() }} materiales
+            </div>
         </div>
+        @endif
+        
+        
+        
     </div>
 </div>
 @endsection' > resources\views\materials\index.blade.php

@@ -1,3 +1,22 @@
+
+1. Dar permisos correctos a las carpetas
+bash
+
+# Dar permisos a la carpeta storage
+chmod -R 755 storage
+chmod -R 755 storage/app/public
+chmod -R 755 storage/app/public/apu_files
+
+# Dar permisos específicos a los archivos
+find storage/app/public/apu_files -type f -exec chmod 644 {} \
+
+2. Verificar los permisos de la carpeta public/storage
+bash
+
+chmod -R 755 public/storage
+
+3. Si usas cPanel, es posible que necesites configurar .htacces
+
 ✅ Resumen de lo que hemos construido
 📋 Sistema de Presupuestos
 
@@ -20,6 +39,18 @@ Transporte	✅
 APUs	✅
 Presupuestos	✅
 Dashboard	✅
+
+
+
+
+
+
+
+
+
+
+
+
 🚀 Mejoras futuras sugeridas
 
 Cuando quieras mejorar, aquí hay algunas ideas:
