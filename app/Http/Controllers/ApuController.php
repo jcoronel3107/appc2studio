@@ -10,7 +10,7 @@ use App\Models\Labor;
 use App\Models\Transport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-
+use Maatwebsite\Excel\Facades\Excel;
 class ApuController extends Controller
 {
     public function index()
