@@ -29,35 +29,99 @@
                 </div>
             </div>
             
-            <!-- APUs -->
+            <!-- Categorías y APUs -->
             <div style="margin-bottom: 30px;">
-                <h3>📋 APUs del Presupuesto</h3>
-                <div id="apus-container">
-                    @foreach($budget->items as $index => $item)
-                    <div class="apu-row" style="margin-bottom: 10px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
-                        <select name="items[{{ $index }}][apu_id]" style="flex: 2; padding: 8px;" class="apu-select select2">
-                            <option value="">🔍 Seleccione un APU...</option>
-                            @foreach($apus as $apu)
-                                <option value="{{ $apu->id }}" data-code="{{ $apu->code }}" data-name="{{ $apu->name }}" data-unit="{{ $apu->unit }}" data-price="{{ $apu->total_cost ?? 0 }}" {{ $item->apu_id == $apu->id ? 'selected' : '' }}>
-                                    {{ $apu->code }} - {{ $apu->name }} (${{ number_format($apu->total_cost ?? 0, 2) }}/{{ $apu->unit }})
-                                </option>
-                            @endforeach
-                        </select>
-                        <input type="text" name="items[{{ $index }}][apu_code]" value="{{ $item->apu_code }}" placeholder="Código" style="flex: 1; padding: 8px;" class="apu-code" readonly>
-                        <input type="text" name="items[{{ $index }}][apu_name]" value="{{ $item->apu_name }}" placeholder="Nombre" style="flex: 2; padding: 8px;" class="apu-name" readonly>
-                        <input type="text" name="items[{{ $index }}][apu_unit]" value="{{ $item->apu_unit }}" placeholder="Unidad" style="flex: 1; padding: 8px;" class="apu-unit" readonly>
-                        <input type="number" name="items[{{ $index }}][quantity]" placeholder="Cantidad" step="0.01" style="flex: 1; padding: 8px;" class="apu-quantity" value="{{ $item->quantity }}">
-                        <input type="number" name="items[{{ $index }}][unit_price]" placeholder="Precio Unit." step="0.01" style="flex: 1; padding: 8px;" class="apu-price" value="{{ $item->unit_price }}" readonly>
-                        <input type="number" name="items[{{ $index }}][total]" placeholder="Total" step="0.01" style="flex: 1; padding: 8px; background:#e0e0e0;" class="apu-total" value="{{ $item->total }}" readonly>
-                        <button type="button" class="remove-apu" style="background: #ef4444; color: white; border: none; padding: 8px 12px; cursor: pointer;">🗑️</button>
-                    </div>
-                    @endforeach
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h3>📋 APUs por Categoría</h3>
+                    <button type="button" id="add-categoria" style="background: #8b5cf6; color: white; border: none; padding: 8px 16px; cursor: pointer;">➕ Agregar Categoría</button>
                 </div>
-                <button type="button" id="add-apu" style="background: #3b82f6; color: white; border: none; padding: 8px 16px; margin-top: 10px;">➕ Agregar APU</button>
+                
+                <div id="categorias-container">
+                    @php
+                        // Agrupar items existentes por categoría
+                        $categoriasExistentes = [];
+                        foreach($budget->items as $item) {
+                            $cat = $item->category ?: 'General';
+                            if (!isset($categoriasExistentes[$cat])) {
+                                $categoriasExistentes[$cat] = [];
+                            }
+                            $categoriasExistentes[$cat][] = $item;
+                        }
+                    @endphp
+                    
+                    @if(count($categoriasExistentes) > 0)
+                        @foreach($categoriasExistentes as $nombreCat => $itemsCat)
+                        <div class="categoria-card" style="border: 1px solid #ddd; border-radius: 8px; margin-bottom: 20px; padding: 15px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                                <input type="text" name="categorias[{{ $loop->index }}][nombre]" placeholder="Nombre de la categoría" value="{{ $nombreCat }}" style="flex: 1; padding: 8px; font-size: 16px; font-weight: bold;">
+                                <button type="button" class="remove-categoria" style="background: #ef4444; color: white; border: none; padding: 5px 10px; margin-left: 10px; cursor: pointer;">🗑️ Eliminar Categoría</button>
+                            </div>
+                            <div class="apus-container" data-categoria-index="{{ $loop->index }}">
+                                @foreach($itemsCat as $idx => $item)
+                                <div class="apu-row" style="margin-bottom: 10px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                                    <select name="categorias[{{ $loop->parent->index }}][items][{{ $idx }}][apu_id]" style="flex: 2; padding: 8px;" class="apu-select select2">
+                                        <option value="">🔍 Seleccione un APU...</option>
+                                        @foreach($apus as $apu)
+                                            <option value="{{ $apu->id }}" data-code="{{ $apu->code }}" data-name="{{ $apu->name }}" data-unit="{{ $apu->unit }}" data-price="{{ $apu->total_cost ?? 0 }}" {{ $item->apu_id == $apu->id ? 'selected' : '' }}>
+                                                {{ $apu->code }} - {{ $apu->name }} (${{ number_format($apu->total_cost ?? 0, 2) }}/{{ $apu->unit }})
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <input type="text" name="categorias[{{ $loop->parent->index }}][items][{{ $idx }}][apu_code]" value="{{ $item->apu_code }}" placeholder="Código" style="flex: 1; padding: 8px;" class="apu-code" readonly>
+                                    <input type="text" name="categorias[{{ $loop->parent->index }}][items][{{ $idx }}][apu_name]" value="{{ $item->apu_name }}" placeholder="Nombre" style="flex: 2; padding: 8px;" class="apu-name" readonly>
+                                    <input type="text" name="categorias[{{ $loop->parent->index }}][items][{{ $idx }}][apu_unit]" value="{{ $item->apu_unit }}" placeholder="Unidad" style="flex: 1; padding: 8px;" class="apu-unit" readonly>
+                                    <input type="number" name="categorias[{{ $loop->parent->index }}][items][{{ $idx }}][quantity]" placeholder="Cantidad" step="0.01" style="flex: 1; padding: 8px;" class="apu-quantity" value="{{ $item->quantity }}">
+                                    <input type="number" name="categorias[{{ $loop->parent->index }}][items][{{ $idx }}][unit_price]" placeholder="Precio" step="0.01" style="flex: 1; padding: 8px;" class="apu-price" value="{{ $item->unit_price }}" readonly>
+                                    <input type="number" name="categorias[{{ $loop->parent->index }}][items][{{ $idx }}][total]" placeholder="Total" step="0.01" style="flex: 1; padding: 8px; background:#e0e0e0;" class="apu-total" value="{{ $item->total }}" readonly>
+                                    <button type="button" class="remove-apu" style="background: #ef4444; color: white; border: none; padding: 8px 12px; cursor: pointer;">🗑️</button>
+                                </div>
+                                @endforeach
+                            </div>
+                            <button type="button" class="add-apu" data-categoria-index="{{ $loop->index }}" style="background: #3b82f6; color: white; border: none; padding: 5px 12px; margin-top: 10px; cursor: pointer;">➕ Agregar APU</button>
+                            <div class="categoria-subtotal" style="text-align: right; margin-top: 10px; padding: 8px; background: #e0e7ff; border-radius: 4px;">
+                                <strong>Subtotal:</strong> $ <span class="subtotal-valor">0.00</span>
+                            </div>
+                        </div>
+                        @endforeach
+                    @else
+                        <!-- Categoría por defecto si no hay items -->
+                        <div class="categoria-card" style="border: 1px solid #ddd; border-radius: 8px; margin-bottom: 20px; padding: 15px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                                <input type="text" name="categorias[0][nombre]" placeholder="Nombre de la categoría" value="General" style="flex: 1; padding: 8px; font-size: 16px; font-weight: bold;">
+                                <button type="button" class="remove-categoria" style="background: #ef4444; color: white; border: none; padding: 5px 10px; margin-left: 10px; cursor: pointer;">🗑️</button>
+                            </div>
+                            <div class="apus-container" data-categoria-index="0">
+                                <div class="apu-row" style="margin-bottom: 10px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                                    <select name="categorias[0][items][0][apu_id]" style="flex: 2; padding: 8px;" class="apu-select select2">
+                                        <option value="">🔍 Seleccione un APU...</option>
+                                        @foreach($apus as $apu)
+                                            <option value="{{ $apu->id }}" data-code="{{ $apu->code }}" data-name="{{ $apu->name }}" data-unit="{{ $apu->unit }}" data-price="{{ $apu->total_cost ?? 0 }}">
+                                                {{ $apu->code }} - {{ $apu->name }} (${{ number_format($apu->total_cost ?? 0, 2) }}/{{ $apu->unit }})
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <input type="text" name="categorias[0][items][0][apu_code]" placeholder="Código" style="flex: 1; padding: 8px;" class="apu-code" readonly>
+                                    <input type="text" name="categorias[0][items][0][apu_name]" placeholder="Nombre" style="flex: 2; padding: 8px;" class="apu-name" readonly>
+                                    <input type="text" name="categorias[0][items][0][apu_unit]" placeholder="Unidad" style="flex: 1; padding: 8px;" class="apu-unit" readonly>
+                                    <input type="number" name="categorias[0][items][0][quantity]" placeholder="Cantidad" step="0.01" style="flex: 1; padding: 8px;" class="apu-quantity" value="1">
+                                    <input type="number" name="categorias[0][items][0][unit_price]" placeholder="Precio" step="0.01" style="flex: 1; padding: 8px;" class="apu-price" readonly>
+                                    <input type="number" name="categorias[0][items][0][total]" placeholder="Total" step="0.01" style="flex: 1; padding: 8px; background:#e0e0e0;" class="apu-total" readonly>
+                                    <button type="button" class="remove-apu" style="background: #ef4444; color: white; border: none; padding: 8px 12px; cursor: pointer;">🗑️</button>
+                                </div>
+                            </div>
+                            <button type="button" class="add-apu" data-categoria-index="0" style="background: #3b82f6; color: white; border: none; padding: 5px 12px; margin-top: 10px; cursor: pointer;">➕ Agregar APU</button>
+                            <div class="categoria-subtotal" style="text-align: right; margin-top: 10px; padding: 8px; background: #e0e7ff; border-radius: 4px;">
+                                <strong>Subtotal:</strong> $ <span class="subtotal-valor">0.00</span>
+                            </div>
+                        </div>
+                    @endif
+                </div>
             </div>
             
-            <!-- Totales -->
+            <!-- Totales Generales -->
             <div style="background: #d4edda; padding: 15px; border-radius: 8px; margin-top: 20px; text-align: right;">
+                <div id="subtotales-categorias"></div>
+                <hr>
                 <p><strong>SUBTOTAL APUs:</strong> $ <span id="subtotal-apus">0.00</span></p>
                 <p><strong>MONTO ANTICIPO:</strong> $ <span id="monto-anticipo">{{ number_format($budget->monto_anticipo ?? 0, 2) }}</span></p>
                 <hr>
@@ -79,6 +143,8 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script>
+    let categoriaIndex = {{ count($categoriasExistentes) }};
+    
     function initSelect2(container) {
         $(container).find('.select2').each(function() {
             if (!$(this).data('select2')) {
@@ -99,86 +165,168 @@
         return total;
     }
     
-    function recalcularTotales() {
+    function calcularSubtotalCategoria(categoriaCard) {
         let subtotal = 0;
-        document.querySelectorAll(".apu-row").forEach(row => {
+        categoriaCard.querySelectorAll(".apu-row").forEach(row => {
             subtotal += parseFloat(row.querySelector(".apu-total").value) || 0;
+        });
+        const subtotalSpan = categoriaCard.querySelector(".subtotal-valor");
+        if (subtotalSpan) subtotalSpan.innerHTML = subtotal.toFixed(2);
+        return subtotal;
+    }
+    
+    function recalcularTotalesGenerales() {
+        let totalGeneral = 0;
+        let subtotalesHtml = '';
+        
+        document.querySelectorAll(".categoria-card").forEach((card, idx) => {
+            const nombreCat = card.querySelector("input[name*='[nombre]']").value || 'Categoría';
+            const subtotal = calcularSubtotalCategoria(card);
+            totalGeneral += subtotal;
+            subtotalesHtml += `<p><strong>${nombreCat}:</strong> $ ${subtotal.toFixed(2)}</p>`;
         });
         
         const montoAnticipo = parseFloat(document.querySelector("input[name='monto_anticipo']").value) || 0;
         
-        document.getElementById("subtotal-apus").innerHTML = subtotal.toFixed(2);
+        document.getElementById("subtotales-categorias").innerHTML = subtotalesHtml;
+        document.getElementById("subtotal-apus").innerHTML = totalGeneral.toFixed(2);
         document.getElementById("monto-anticipo").innerHTML = montoAnticipo.toFixed(2);
-        document.getElementById("total-presupuesto").innerHTML = (subtotal - montoAnticipo).toFixed(2);
-        document.getElementById("monto").value = subtotal - montoAnticipo;
+        document.getElementById("total-presupuesto").innerHTML = (totalGeneral - montoAnticipo).toFixed(2);
+        document.getElementById("monto").value = totalGeneral - montoAnticipo;
     }
     
-    function configurarEventosFila(row) {
+    function configurarEventosFila(row, categoriaIdx) {
         const select = row.querySelector(".apu-select");
         const code = row.querySelector(".apu-code");
         const name = row.querySelector(".apu-name");
         const unit = row.querySelector(".apu-unit");
         const price = row.querySelector(".apu-price");
         const quantity = row.querySelector(".apu-quantity");
-        const total = row.querySelector(".apu-total");
         
-        $(select).on('change', function() {
+        $(select).off('change').on('change', function() {
             const option = select.options[select.selectedIndex];
             code.value = option.getAttribute("data-code") || "";
             name.value = option.getAttribute("data-name") || "";
             unit.value = option.getAttribute("data-unit") || "";
             price.value = option.getAttribute("data-price") || 0;
             calcularTotalFila(row);
-            recalcularTotales();
+            recalcularTotalesGenerales();
         });
         
         quantity.oninput = function() {
             calcularTotalFila(row);
-            recalcularTotales();
+            recalcularTotalesGenerales();
         };
         
         const removeBtn = row.querySelector(".remove-apu");
         if (removeBtn) {
-            removeBtn.onclick = function() { row.remove(); recalcularTotales(); };
+            removeBtn.onclick = function() { 
+                row.remove(); 
+                recalcularTotalesGenerales(); 
+            };
         }
     }
     
-    document.querySelectorAll(".apu-row").forEach(row => configurarEventosFila(row));
+    function configurarEventosCategoria(card, idx) {
+        const removeCatBtn = card.querySelector(".remove-categoria");
+        if (removeCatBtn) {
+            removeCatBtn.onclick = function() { 
+                card.remove(); 
+                recalcularTotalesGenerales(); 
+            };
+        }
+        
+        const addApuBtn = card.querySelector(".add-apu");
+        const apusContainer = card.querySelector(".apus-container");
+        let itemIndex = apusContainer.querySelectorAll(".apu-row").length;
+        
+        addApuBtn.onclick = function() {
+            const newRow = document.createElement("div");
+            newRow.className = "apu-row";
+            newRow.style = "margin-bottom: 10px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;";
+            newRow.innerHTML = `
+                <select name="categorias[${idx}][items][${itemIndex}][apu_id]" style="flex: 2; padding: 8px;" class="apu-select select2">
+                    <option value="">🔍 Seleccione un APU...</option>
+                    @foreach($apus as $apu)
+                        <option value="{{ $apu->id }}" data-code="{{ $apu->code }}" data-name="{{ $apu->name }}" data-unit="{{ $apu->unit }}" data-price="{{ $apu->total_cost ?? 0 }}">
+                            {{ $apu->code }} - {{ $apu->name }} (${{ number_format($apu->total_cost ?? 0, 2) }}/{{ $apu->unit }})
+                        </option>
+                    @endforeach
+                </select>
+                <input type="text" name="categorias[${idx}][items][${itemIndex}][apu_code]" placeholder="Código" style="flex: 1; padding: 8px;" class="apu-code" readonly>
+                <input type="text" name="categorias[${idx}][items][${itemIndex}][apu_name]" placeholder="Nombre" style="flex: 2; padding: 8px;" class="apu-name" readonly>
+                <input type="text" name="categorias[${idx}][items][${itemIndex}][apu_unit]" placeholder="Unidad" style="flex: 1; padding: 8px;" class="apu-unit" readonly>
+                <input type="number" name="categorias[${idx}][items][${itemIndex}][quantity]" placeholder="Cantidad" step="0.01" style="flex: 1; padding: 8px;" class="apu-quantity" value="1">
+                <input type="number" name="categorias[${idx}][items][${itemIndex}][unit_price]" placeholder="Precio" step="0.01" style="flex: 1; padding: 8px;" class="apu-price" readonly>
+                <input type="number" name="categorias[${idx}][items][${itemIndex}][total]" placeholder="Total" step="0.01" style="flex: 1; padding: 8px; background:#e0e0e0;" class="apu-total" readonly>
+                <button type="button" class="remove-apu" style="background: #ef4444; color: white; border: none; padding: 8px 12px; cursor: pointer;">🗑️</button>
+            `;
+            apusContainer.appendChild(newRow);
+            initSelect2(newRow);
+            configurarEventosFila(newRow, idx);
+            itemIndex++;
+            recalcularTotalesGenerales();
+        };
+        
+        card.querySelectorAll(".apu-row").forEach(row => {
+            configurarEventosFila(row, idx);
+        });
+        
+        const nombreInput = card.querySelector("input[name*='[nombre]']");
+        if (nombreInput) {
+            nombreInput.oninput = function() { recalcularTotalesGenerales(); };
+        }
+    }
     
-    let apuIndex = {{ $budget->items->count() }};
-    if (apuIndex === 0) apuIndex = 1;
+    // Configurar categorías existentes
+    document.querySelectorAll(".categoria-card").forEach((card, idx) => {
+        configurarEventosCategoria(card, idx);
+    });
     
-    document.getElementById("add-apu").onclick = function() {
-        const container = document.getElementById("apus-container");
-        const newRow = document.createElement("div");
-        newRow.className = "apu-row";
-        newRow.style = "margin-bottom: 10px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;";
-        newRow.innerHTML = `
-            <select name="items[${apuIndex}][apu_id]" style="flex: 2; padding: 8px;" class="apu-select select2">
-                <option value="">🔍 Seleccione un APU...</option>
-                @foreach($apus as $apu)
-                    <option value="{{ $apu->id }}" data-code="{{ $apu->code }}" data-name="{{ $apu->name }}" data-unit="{{ $apu->unit }}" data-price="{{ $apu->total_cost ?? 0 }}">
-                        {{ $apu->code }} - {{ $apu->name }} (${{ number_format($apu->total_cost ?? 0, 2) }}/{{ $apu->unit }})
-                    </option>
-                @endforeach
-            </select>
-            <input type="text" name="items[${apuIndex}][apu_code]" placeholder="Código" style="flex: 1; padding: 8px;" class="apu-code" readonly>
-            <input type="text" name="items[${apuIndex}][apu_name]" placeholder="Nombre" style="flex: 2; padding: 8px;" class="apu-name" readonly>
-            <input type="text" name="items[${apuIndex}][apu_unit]" placeholder="Unidad" style="flex: 1; padding: 8px;" class="apu-unit" readonly>
-            <input type="number" name="items[${apuIndex}][quantity]" placeholder="Cantidad" step="0.01" style="flex: 1; padding: 8px;" class="apu-quantity" value="1">
-            <input type="number" name="items[${apuIndex}][unit_price]" placeholder="Precio Unit." step="0.01" style="flex: 1; padding: 8px;" class="apu-price" readonly>
-            <input type="number" name="items[${apuIndex}][total]" placeholder="Total" step="0.01" style="flex: 1; padding: 8px; background:#e0e0e0;" class="apu-total" readonly>
-            <button type="button" class="remove-apu" style="background: #ef4444; color: white; border: none; padding: 8px 12px; cursor: pointer;">🗑️</button>
+    document.getElementById("add-categoria").onclick = function() {
+        const container = document.getElementById("categorias-container");
+        const newCard = document.createElement("div");
+        newCard.className = "categoria-card";
+        newCard.style = "border: 1px solid #ddd; border-radius: 8px; margin-bottom: 20px; padding: 15px;";
+        newCard.innerHTML = `
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <input type="text" name="categorias[${categoriaIndex}][nombre]" placeholder="Nombre de la categoría" value="Nueva Categoría" style="flex: 1; padding: 8px; font-size: 16px; font-weight: bold;">
+                <button type="button" class="remove-categoria" style="background: #ef4444; color: white; border: none; padding: 5px 10px; margin-left: 10px; cursor: pointer;">🗑️</button>
+            </div>
+            <div class="apus-container" data-categoria-index="${categoriaIndex}">
+                <div class="apu-row" style="margin-bottom: 10px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                    <select name="categorias[${categoriaIndex}][items][0][apu_id]" style="flex: 2; padding: 8px;" class="apu-select select2">
+                        <option value="">🔍 Seleccione un APU...</option>
+                        @foreach($apus as $apu)
+                            <option value="{{ $apu->id }}" data-code="{{ $apu->code }}" data-name="{{ $apu->name }}" data-unit="{{ $apu->unit }}" data-price="{{ $apu->total_cost ?? 0 }}">
+                                {{ $apu->code }} - {{ $apu->name }} (${{ number_format($apu->total_cost ?? 0, 2) }}/{{ $apu->unit }})
+                            </option>
+                        @endforeach
+                    </select>
+                    <input type="text" name="categorias[${categoriaIndex}][items][0][apu_code]" placeholder="Código" style="flex: 1; padding: 8px;" class="apu-code" readonly>
+                    <input type="text" name="categorias[${categoriaIndex}][items][0][apu_name]" placeholder="Nombre" style="flex: 2; padding: 8px;" class="apu-name" readonly>
+                    <input type="text" name="categorias[${categoriaIndex}][items][0][apu_unit]" placeholder="Unidad" style="flex: 1; padding: 8px;" class="apu-unit" readonly>
+                    <input type="number" name="categorias[${categoriaIndex}][items][0][quantity]" placeholder="Cantidad" step="0.01" style="flex: 1; padding: 8px;" class="apu-quantity" value="1">
+                    <input type="number" name="categorias[${categoriaIndex}][items][0][unit_price]" placeholder="Precio" step="0.01" style="flex: 1; padding: 8px;" class="apu-price" readonly>
+                    <input type="number" name="categorias[${categoriaIndex}][items][0][total]" placeholder="Total" step="0.01" style="flex: 1; padding: 8px; background:#e0e0e0;" class="apu-total" readonly>
+                    <button type="button" class="remove-apu" style="background: #ef4444; color: white; border: none; padding: 8px 12px; cursor: pointer;">🗑️</button>
+                </div>
+            </div>
+            <button type="button" class="add-apu" data-categoria-index="${categoriaIndex}" style="background: #3b82f6; color: white; border: none; padding: 5px 12px; margin-top: 10px; cursor: pointer;">➕ Agregar APU</button>
+            <div class="categoria-subtotal" style="text-align: right; margin-top: 10px; padding: 8px; background: #e0e7ff; border-radius: 4px;">
+                <strong>Subtotal:</strong> $ <span class="subtotal-valor">0.00</span>
+            </div>
         `;
-        container.appendChild(newRow);
-        initSelect2(newRow);
-        configurarEventosFila(newRow);
-        apuIndex++;
+        container.appendChild(newCard);
+        
+        initSelect2(newCard);
+        configurarEventosCategoria(newCard, categoriaIndex);
+        categoriaIndex++;
+        recalcularTotalesGenerales();
     };
     
-    // Recalcular cuando cambie el monto de anticipo
     document.querySelector("input[name='monto_anticipo']").oninput = function() {
-        recalcularTotales();
+        recalcularTotalesGenerales();
     };
     
     // Calcular fecha de terminación automáticamente
@@ -188,8 +336,7 @@
         if (plazo && inicio) {
             const terminacion = new Date(inicio);
             terminacion.setDate(inicio.getDate() + plazo);
-            const terminacionStr = terminacion.toISOString().split('T')[0];
-            document.querySelector("input[name='fecha_terminacion_plazo']").value = terminacionStr;
+            document.querySelector("input[name='fecha_terminacion_plazo']").value = terminacion.toISOString().split('T')[0];
         }
     };
     
@@ -200,14 +347,13 @@
             const inicio = new Date(fechaInicio);
             const terminacion = new Date(inicio);
             terminacion.setDate(inicio.getDate() + plazo);
-            const terminacionStr = terminacion.toISOString().split('T')[0];
-            document.querySelector("input[name='fecha_terminacion_plazo']").value = terminacionStr;
+            document.querySelector("input[name='fecha_terminacion_plazo']").value = terminacion.toISOString().split('T')[0];
         }
     };
     
     $(document).ready(function() {
         initSelect2(document);
-        recalcularTotales();
+        recalcularTotalesGenerales();
     });
 </script>
 @endsection

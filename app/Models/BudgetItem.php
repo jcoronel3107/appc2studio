@@ -12,6 +12,7 @@ class BudgetItem extends Model
         'apu_code',
         'apu_name',
         'apu_unit',
+        'category',  // ← Agrega esta línea
         'quantity',
         'unit_price',
         'total',

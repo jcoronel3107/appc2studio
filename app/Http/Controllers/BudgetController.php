@@ -25,26 +25,31 @@ class BudgetController extends Controller
     {
         $budget = Budget::create($request->all());
         
-        if ($request->has('items')) {
-            foreach ($request->items as $item) {
-                if (!empty($item['apu_id']) && !empty($item['quantity'])) {
-                    BudgetItem::create([
-                        'budget_id' => $budget->id,
-                        'apu_id' => $item['apu_id'],
-                        'apu_code' => $item['apu_code'],
-                        'apu_name' => $item['apu_name'],
-                        'apu_unit' => $item['apu_unit'],
-                        'quantity' => $item['quantity'],
-                        'unit_price' => $item['unit_price'],
-                        'total' => $item['total'],
-                    ]);
+        if ($request->has('categorias')) {
+            foreach ($request->categorias as $categoria) {
+                $nombreCat = $categoria['nombre'];
+                if (isset($categoria['items'])) {
+                    foreach ($categoria['items'] as $item) {
+                        if (!empty($item['apu_id']) && !empty($item['quantity'])) {
+                            BudgetItem::create([
+                                'budget_id' => $budget->id,
+                                'apu_id' => $item['apu_id'],
+                                'apu_code' => $item['apu_code'],
+                                'apu_name' => $item['apu_name'],
+                                'apu_unit' => $item['apu_unit'],
+                                'category' => $nombreCat,
+                                'quantity' => $item['quantity'],
+                                'unit_price' => $item['unit_price'],
+                                'total' => $item['total'],
+                            ]);
+                        }
+                    }
                 }
             }
         }
         
-        // Calcular monto total del presupuesto
         $total = BudgetItem::where('budget_id', $budget->id)->sum('total');
-        $budget->update(['monto' => $total]);
+        $budget->update(['monto' => $total - ($budget->monto_anticipo ?? 0)]);
         
         return redirect()->route('budgets.index')->with('success', 'Presupuesto creado exitosamente');
     }
@@ -67,28 +72,33 @@ class BudgetController extends Controller
         $budget = Budget::findOrFail($id);
         $budget->update($request->all());
         
-        // Eliminar items existentes y recrear
         BudgetItem::where('budget_id', $budget->id)->delete();
         
-        if ($request->has('items')) {
-            foreach ($request->items as $item) {
-                if (!empty($item['apu_id']) && !empty($item['quantity'])) {
-                    BudgetItem::create([
-                        'budget_id' => $budget->id,
-                        'apu_id' => $item['apu_id'],
-                        'apu_code' => $item['apu_code'],
-                        'apu_name' => $item['apu_name'],
-                        'apu_unit' => $item['apu_unit'],
-                        'quantity' => $item['quantity'],
-                        'unit_price' => $item['unit_price'],
-                        'total' => $item['total'],
-                    ]);
+        if ($request->has('categorias')) {
+            foreach ($request->categorias as $categoria) {
+                $nombreCat = $categoria['nombre'];
+                if (isset($categoria['items'])) {
+                    foreach ($categoria['items'] as $item) {
+                        if (!empty($item['apu_id']) && !empty($item['quantity'])) {
+                            BudgetItem::create([
+                                'budget_id' => $budget->id,
+                                'apu_id' => $item['apu_id'],
+                                'apu_code' => $item['apu_code'],
+                                'apu_name' => $item['apu_name'],
+                                'apu_unit' => $item['apu_unit'],
+                                'category' => $nombreCat,
+                                'quantity' => $item['quantity'],
+                                'unit_price' => $item['unit_price'],
+                                'total' => $item['total'],
+                            ]);
+                        }
+                    }
                 }
             }
         }
         
         $total = BudgetItem::where('budget_id', $budget->id)->sum('total');
-        $budget->update(['monto' => $total]);
+        $budget->update(['monto' => $total - ($budget->monto_anticipo ?? 0)]);
         
         return redirect()->route('budgets.index')->with('success', 'Presupuesto actualizado');
     }
