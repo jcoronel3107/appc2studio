@@ -39,7 +39,35 @@ Transporte	✅
 APUs	✅
 Presupuestos	✅
 Dashboard	✅
+Resumen final de la estructura
+text
 
+📚 CAPÍTULO (ej: 1 - Movimiento de Tierras)
+    🎯 HITO (ej: 1.1 - Excavaciones)
+        📁 CATEGORÍA (ej: 1.1.1 - Excavación en suelo)
+            📋 APU 1
+            📋 APU 2
+        📁 CATEGORÍA (ej: 1.1.2 - Excavación en roca)
+            📋 APU 3
+    🎯 HITO (ej: 1.2 - Rellenos)
+        📁 CATEGORÍA (ej: 1.2.1 - Relleno compactado)
+            📋 APU 4
+
+📊 Totales mostrados:
+Nivel	Total	Ubicación
+Por Capítulo	✅	Resumen superior + dentro del capítulo
+Por Hito	✅	Resumen superior + dentro del hito
+Por Categoría	✅	Resumen superior + dentro de la categoría
+Total APUs	✅	Total general
+Monto Anticipo	✅	Resta del total
+Total Presupuesto	✅	Valor final
+🎯 URLs disponibles:
+URL	Función
+/budgets	Listado de presupuestos
+/budgets/create-chapter	Crear presupuesto por capítulos
+/budgets/create-with-milestones	Crear presupuesto por hitos
+/budgets/show-chapter/{id}	Ver presupuesto con estructura completa
+/budgets/show-with-milestones/{id}	Ver presupuesto por hitos
 
 
 

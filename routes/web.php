@@ -58,6 +58,14 @@ Route::get('/transports-export', [TransportController::class, 'export'])->name('
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::get('/budgets/create-with-milestones', [BudgetController::class, 'createWithMilestones'])->name('budgets.create-with-milestones');
+Route::get('/budgets/show-with-milestones/{id}', [BudgetController::class, 'showWithMilestones'])->name('budgets.show-with-milestones');
+
+Route::get('/budgets/create-chapter', [BudgetController::class, 'createChapter'])->name('budgets.create-chapter');
+Route::post('/budgets/store-chapter', [BudgetController::class, 'storeChapter'])->name('budgets.store-chapter');
+Route::get('/budgets/show-chapter/{id}', [BudgetController::class, 'showChapter'])->name('budgets.show-chapter');
+
+
 // Rutas de Presupuestos
 Route::resource('budgets', BudgetController::class);
 

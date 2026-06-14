@@ -8,23 +8,19 @@ class BudgetItem extends Model
 {
     protected $fillable = [
         'budget_id',
+        'chapter_code',
+        'chapter_name',
+        'milestone_id',
+        'milestone_code',
+        'milestone_name',
+        'category_code',
         'apu_id',
         'apu_code',
         'apu_name',
         'apu_unit',
-        'category',  // ← Agrega esta línea
+        'category',
         'quantity',
         'unit_price',
         'total',
     ];
-
-    public function budget()
-    {
-        return $this->belongsTo(Budget::class);
-    }
-
-    public function apu()
-    {
-        return $this->belongsTo(AnalysisHeader::class, 'apu_id');
-    }
 }

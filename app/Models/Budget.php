@@ -27,4 +27,9 @@ class Budget extends Model
     {
         return $this->hasMany(BudgetItem::class);
     }
+
+     public function milestones()
+    {
+        return $this->hasMany(BudgetMilestone::class)->orderBy('order');
+    }
 }

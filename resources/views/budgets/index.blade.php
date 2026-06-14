@@ -5,7 +5,11 @@
     <div style="background: white; border-radius: 8px; padding: 20px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h1>📋 Presupuestos</h1>
-            <a href="{{ route('budgets.create') }}" style="background: #22c55e; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px;">➕ Nuevo Presupuesto</a>
+            <div>
+                <a href="{{ route('budgets.create') }}" style="background: #22c55e; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px;">➕ Nuevo Presupuesto</a>
+                <a href="{{ route('budgets.create-with-milestones') }}" style="background: #8b5cf6; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; margin-left: 10px;">🚀 Con Hitos</a>
+                <a href="{{ route('budgets.create-chapter') }}" style="background: #1e40af; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; margin-left: 10px;">📚 Por Capítulos</a>
+            </div>
         </div>
         
         @if(session('success'))
@@ -24,23 +28,29 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($budgets as $budget)
+                @forelse($budgets as $budgetItem)
                 <tr>
-                    <td style="padding: 10px; border: 1px solid #ddd;">{{ $budget->id }}</td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">{{ $budget->obra }}</td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">{{ $budget->contratista ?? '-' }}</td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">${{ number_format($budget->monto ?? 0, 2) }}</td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">{{ $budget->created_at->format('d/m/Y') }}</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">{{ $budgetItem->id }}</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">{{ $budgetItem->obra }}</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">{{ $budgetItem->contratista ?? '-' }}</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">${{ number_format($budgetItem->monto ?? 0, 2) }}</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">{{ $budgetItem->created_at->format('d/m/Y') }}</td>
                     <td style="padding: 10px; border: 1px solid #ddd;">
-                        <a href="{{ route('budgets.show', $budget->id) }}" style="color: #3b82f6;">👁️ Ver</a>
-                        <a href="{{ route('budgets.edit', $budget->id) }}" style="color: #eab308; margin-left: 10px;">✏️ Editar</a>
-                        <form action="{{ route('budgets.destroy', $budget->id) }}" method="POST" style="display:inline; margin-left: 10px;">
+                        <a href="{{ route('budgets.show', $budgetItem->id) }}" style="color: #3b82f6;">👁️ Ver</a>
+                        <a href="{{ route('budgets.show-with-milestones', $budgetItem->id) }}" style="color: #8b5cf6; margin-left: 10px;">📊 Hitos</a>
+                        <a href="{{ route('budgets.show-chapter', $budgetItem->id) }}" style="color: #1e40af; margin-left: 10px;">📚 Capítulos</a>
+                        <a href="{{ route('budgets.edit', $budgetItem->id) }}" style="color: #eab308; margin-left: 10px;">✏️ Editar</a>
+                        <form action="{{ route('budgets.destroy', $budgetItem->id) }}" method="POST" style="display:inline; margin-left: 10px;">
                             @csrf @method('DELETE')
                             <button type="submit" style="color: #ef4444; background: none; border: none; cursor: pointer;" onclick="return confirm('¿Eliminar este presupuesto?')">🗑️ Eliminar</button>
                         </form>
                     </td>
                 </tr>
-                @endforeach
+                @empty
+                <tr>
+                    <td colspan="6" style="padding: 40px; text-align: center;">📭 No hay presupuestos registrados</td>
+                </tr>
+                @endforelse
             </tbody>
         </table>
         {{ $budgets->links() }}
