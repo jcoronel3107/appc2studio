@@ -6,7 +6,12 @@ use App\Models\Budget;
 use App\Models\BudgetItem;
 use App\Models\AnalysisHeader;
 use App\Models\BudgetMilestone;
+use App\Exports\BudgetChapterExport;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\BudgetCompleteExport;
 use Illuminate\Http\Request;
+use App\Exports\PresupuestoExport;
+
 
 class BudgetController extends Controller
 {
@@ -242,5 +247,24 @@ public function showChapter($id)
     return view('budgets.show_chapter', compact('budget'));
 }
 
+public function exportChapter($id)
+{
+    $budget = Budget::findOrFail($id);
+    $filename = 'presupuesto_' . $budget->id . '_' . str_replace(' ', '_', $budget->obra) . '.xlsx';
+    return Excel::download(new BudgetChapterExport($id), $filename);
+}
 
+public function exportPresupuesto($id)
+{
+    $budget = Budget::findOrFail($id);
+    $filename = 'presupuesto_' . $budget->id . '_' . str_replace(' ', '_', $budget->obra) . '.xlsx';
+    return Excel::download(new PresupuestoExport($id), $filename);
+}
+
+public function exportComplete($id)
+{
+    $budget = Budget::findOrFail($id);
+    $filename = 'presupuesto_' . $budget->id . '_' . str_replace(' ', '_', $budget->obra) . '.xlsx';
+    return Excel::download(new BudgetCompleteExport($id), $filename);
+}
 }

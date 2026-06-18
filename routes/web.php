@@ -45,7 +45,7 @@ Route::middleware(['auth'])->group(function ()
     // Exportar APUs
     Route::get('/exportar-apus', [ApuController::class, 'exportAll'])->name('export.apus');
     Route::get('/exportar-apu/{id}', [ApuController::class, 'exportSingle'])->name('export.apu');
-    
+    Route::get('/budgets/export-presupuesto/{id}', [BudgetController::class, 'exportPresupuesto'])->name('budgets.export-presupuesto');
     // Rutas para clonar APUs
     Route::get('/apu/clonar/{id}', [ApuController::class, 'clone'])->name('apus.clone');
 Route::post('/apu/clonar/{id}', [ApuController::class, 'cloneStore'])->name('apus.clone.store');
@@ -65,7 +65,7 @@ Route::get('/budgets/create-chapter', [BudgetController::class, 'createChapter']
 Route::post('/budgets/store-chapter', [BudgetController::class, 'storeChapter'])->name('budgets.store-chapter');
 Route::get('/budgets/show-chapter/{id}', [BudgetController::class, 'showChapter'])->name('budgets.show-chapter');
 
-
+Route::get('/budgets/export-chapter/{id}', [BudgetController::class, 'exportChapter'])->name('budgets.export-chapter');
 // Rutas de Presupuestos
 Route::resource('budgets', BudgetController::class);
 
@@ -91,7 +91,7 @@ Route::resource('labors', LaborController::class);
 Route::get('/labors-import', [LaborController::class, 'importForm'])->name('labors.import.form');
 Route::post('/labors-import', [LaborController::class, 'import'])->name('labors.import');
 Route::get('/labors-export', [LaborController::class, 'export'])->name('labors.export');
-
+Route::get('/budgets/export-complete/{id}', [BudgetController::class, 'exportComplete'])->name('budgets.export-complete');
 
 // Rutas de autenticación (las proporciona Breeze)
 require __DIR__.'/auth.php';

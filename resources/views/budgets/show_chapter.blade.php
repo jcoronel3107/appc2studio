@@ -39,6 +39,9 @@
             <div>
                 <a href="{{ route('budgets.edit', $budget->id) }}" style="background: #eab308; color: white; padding: 8px 16px; text-decoration: none; border-radius: 6px; margin-right: 10px;">✏️ Editar</a>
                 <a href="{{ route('budgets.index') }}" style="background: #6c757d; color: white; padding: 8px 16px; text-decoration: none; border-radius: 6px;">← Volver</a>
+                <a href="{{ route('budgets.export-chapter', $budget->id) }}" style="background: #10b981; color: white; padding: 8px 16px; text-decoration: none; border-radius: 6px; margin-right: 10px;">📊 Exp a Excel</a>
+                <a href="{{ route('budgets.export-presupuesto', $budget->id) }}" style="background: #8b5cf6; color: white; padding: 8px 16px; text-decoration: none; border-radius: 6px; margin-right: 10px;">📊 Exportar Presupuesto</a>
+                <a href="{{ route('budgets.export-complete', $budget->id) }}" style="background: #8b5cf6; color: white; padding: 8px 16px; text-decoration: none; border-radius: 6px; margin-right: 10px;">📥 Exportar</a>
             </div>
         </div>
         
