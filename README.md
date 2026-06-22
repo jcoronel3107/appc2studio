@@ -69,7 +69,158 @@ URL	Función
 /budgets/show-chapter/{id}	Ver presupuesto con estructura completa
 /budgets/show-with-milestones/{id}	Ver presupuesto por hitos
 
+=============================TENANT=======================================================
+¡Excelente! 🎉 Ya tienes el listado de tenants funcionando. Ahora te explico cómo funciona el sistema multi-tenant con SQLite cuando contratas un nuevo cliente.
+📊 Flujo completo para un nuevo cliente
+1. El cliente se registra o el administrador lo crea
 
+Opción A: El administrador crea el cliente desde el panel
+
+    El administrador va a http://localhost:8000/admin/tenants
+
+    Hace clic en "➕ Nuevo Cliente"
+
+    Completa los datos:
+
+        Nombre de la Empresa: Ej: "Constructora XYZ"
+
+        Subdominio: Ej: "xyz" (para acceder a xyz.localhost:8000)
+
+        Email: Ej: "admin@xyz.com"
+
+        Plan: Free / Pro / Enterprise
+
+    Haz clic en "Crear Cliente"
+
+Lo que ocurre automáticamente:
+php
+
+// 1. Se crea un archivo SQLite para el cliente
+database/tenants/xyz.sqlite
+
+// 2. Se ejecutan todas las migraciones en esa base de datos
+// (se crean todas las tablas: users, apus, materials, etc.)
+
+// 3. Se registra el tenant en la tabla principal
+tenants: {
+    id: 1,
+    name: 'Constructora XYZ',
+    subdomain: 'xyz',
+    database_path: 'database/tenants/xyz.sqlite',
+    email: 'admin@xyz.com',
+    plan: 'free',
+    is_active: true
+}
+
+2. El cliente accede a su sistema
+
+El cliente ingresa a su subdominio:
+text
+
+http://xyz.localhost:8000/login
+
+Lo que ocurre:
+
+    El middleware TenantMiddleware detecta el subdominio xyz
+
+    Busca en la tabla tenants el registro con subdomain = 'xyz'
+
+    Cambia la conexión de base de datos a database/tenants/xyz.sqlite
+
+    Todas las consultas ahora van a la base de datos del cliente
+
+3. El cliente se registra o inicia sesión
+
+Cuando el cliente se registra:
+php
+
+// El usuario se crea en la base de datos del cliente (xyz.sqlite)
+User::create([
+    'name' => 'Juan Pérez',
+    'email' => 'juan@xyz.com',
+    'password' => bcrypt('password'),
+    'tenant_id' => null // No se usa porque el tenant ya está definido por el subdominio
+]);
+
+4. El cliente usa el sistema
+
+Todos los datos que el cliente crea (APUs, materiales, presupuestos) se guardan SOLO en su base de datos:
+text
+
+DATOS DEL CLIENTE XYZ:
+├── materials (tabla en xyz.sqlite)
+├── apus (tabla en xyz.sqlite)
+├── budgets (tabla en xyz.sqlite)
+└── labors (tabla en xyz.sqlite)
+
+DATOS DEL CLIENTE ABC (otro cliente):
+├── materials (tabla en abc.sqlite)
+├── apus (tabla en abc.sqlite)
+├── budgets (tabla en abc.sqlite)
+└── labors (tabla en abc.sqlite)
+
+5. Aislamiento total de datos
+
+Cada cliente tiene su propia base de datos SQLite:
+text
+
+📁 database/
+├── 📄 database.sqlite          ← Base de datos MAESTRA (tenants, usuarios admin)
+├── 📁 tenants/
+│   ├── 📄 xyz.sqlite           ← Datos de Constructora XYZ
+│   ├── 📄 abc.sqlite           ← Datos de Constructora ABC
+│   └── 📄 empresa1.sqlite      ← Datos de Empresa 1
+
+🔐 Diagrama de flujo completo:
+text
+
+┌─────────────────────────────────────────────────────────────────────┐
+│                    ADMINISTRADOR DEL SISTEMA                        │
+│  - Crea tenants (clientes)                                         │
+│  - Gestiona suscripciones                                          │
+│  - Ve todos los tenants                                            │
+└─────────────────────────────────────────────────────────────────────┘
+                                │
+                                ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                  BASE DE DATOS MAESTRA (database.sqlite)            │
+│  ┌─────────────────────────────────────────────────────────────┐   │
+│  │  Tabla: tenants                                             │   │
+│  │  id │ name          │ subdomain │ email                 │   │   │
+│  │  1  │ Constructora XYZ │ xyz     │ admin@xyz.com        │   │   │
+│  │  2  │ Constructora ABC │ abc     │ admin@abc.com        │   │   │
+│  └─────────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────────┘
+                    │                        │
+                    ▼                        ▼
+┌───────────────────────────────┐ ┌───────────────────────────────┐
+│   BASE DE DATOS CLIENTE XYZ   │ │   BASE DE DATOS CLIENTE ABC   │
+│   (database/tenants/xyz.sqlite)│ │   (database/tenants/abc.sqlite)│
+│  ┌─────────────────────────┐ │ │  ┌─────────────────────────┐   │
+│  │ Tabla: users            │ │ │  │ Tabla: users            │   │
+│  │ Juan Pérez              │ │ │  │ María Gómez             │   │
+│  │ admin@xyz.com           │ │ │  │ admin@abc.com           │   │
+│  │ (solo ve sus datos)     │ │ │  │ (solo ve sus datos)     │   │
+│  ├─────────────────────────┤ │ │  ├─────────────────────────┤   │
+│  │ Tabla: materials        │ │ │  │ Tabla: materials        │   │
+│  │ - Cemento (25.50)       │ │ │  │ - Arena (45.00)         │   │
+│  │ - Acero (85.00)         │ │ │  │ - Grava (30.00)         │   │
+│  ├─────────────────────────┤ │ │  ├─────────────────────────┤   │
+│  │ Tabla: apus             │ │ │  │ Tabla: apus             │   │
+│  │ - APU001 (Construcción) │ │ │  │ - APU005 (Cimentación)  │   │
+│  ├─────────────────────────┤ │ │  ├─────────────────────────┤   │
+│  │ Tabla: budgets          │ │ │  │ Tabla: budgets          │   │
+│  │ - Presupuesto Obra 1    │ │ │  │ - Presupuesto Obra 2    │   │
+│  └─────────────────────────┘ │ │  └─────────────────────────┘   │
+└───────────────────────────────┘ └───────────────────────────────┘
+
+🌐 URLs de acceso:
+Cliente	URL de acceso
+Constructora XYZ	http://xyz.localhost:8000
+Constructora ABC	http://abc.localhost:8000
+Nuevo cliente	http://[subdominio].localhost:8000
+
+===================================================================================
 
 
 
