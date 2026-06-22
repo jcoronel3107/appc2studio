@@ -16,4 +16,14 @@ class Tenant extends Model
         'plan',
         'is_active'
     ];
+
+    protected $casts = [
+        'subscription_expires' => 'datetime',
+        'is_active' => 'boolean',
+    ];
+
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
 }
