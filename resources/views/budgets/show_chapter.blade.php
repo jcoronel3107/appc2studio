@@ -34,16 +34,16 @@
 <div style="padding: 20px;">
     <div style="background: white; border-radius: 8px; padding: 20px; max-width: 1400px; margin: 0 auto;">
         <!-- Header con botones -->
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h1 style="margin: 0;">📄 Presupuesto #{{ $budget->id }} - {{ $budget->obra }}</h1>
-            <div>
-                <a href="{{ route('budgets.edit', $budget->id) }}" style="background: #eab308; color: white; padding: 8px 16px; text-decoration: none; border-radius: 6px; margin-right: 10px;">✏️ Editar</a>
-                <a href="{{ route('budgets.index') }}" style="background: #6c757d; color: white; padding: 8px 16px; text-decoration: none; border-radius: 6px;">← Volver</a>
-                <a href="{{ route('budgets.export-chapter', $budget->id) }}" style="background: #10b981; color: white; padding: 8px 16px; text-decoration: none; border-radius: 6px; margin-right: 10px;">📊 Exp a Excel</a>
-                <a href="{{ route('budgets.export-presupuesto', $budget->id) }}" style="background: #8b5cf6; color: white; padding: 8px 16px; text-decoration: none; border-radius: 6px; margin-right: 10px;">📊 Exportar Presupuesto</a>
-                <a href="{{ route('budgets.export-complete', $budget->id) }}" style="background: #8b5cf6; color: white; padding: 8px 16px; text-decoration: none; border-radius: 6px; margin-right: 10px;">📥 Exportar</a>
-            </div>
-        </div>
+       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h1 style="margin: 0;">📄 Presupuesto #{{ $budget->id }} - {{ $budget->obra }}</h1>
+    <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+        <a href="{{ route('budgets.edit', $budget->id) }}" style="background: #eab308; color: white; padding: 8px 16px; text-decoration: none; border-radius: 6px;">✏️ Editar</a>
+        <a href="{{ route('budgets.index') }}" style="background: #6c757d; color: white; padding: 8px 16px; text-decoration: none; border-radius: 6px;">← Volver</a>
+        <a href="{{ route('budgets.export-hierarchical', $budget->id) }}" style="background: #8b5cf6; color: white; padding: 8px 16px; text-decoration: none; border-radius: 6px;">📥 Exportar Jerárquico</a>
+        <a href="{{ route('budgets.export-chapter', $budget->id) }}" style="background: #10b981; color: white; padding: 8px 16px; text-decoration: none; border-radius: 6px;">📊 Capítulos</a>
+        <a href="{{ route('budgets.export-presupuesto', $budget->id) }}" style="background: #3b82f6; color: white; padding: 8px 16px; text-decoration: none; border-radius: 6px;">📊 Presupuesto</a>
+    </div>
+</div>
         
         <!-- Datos de cabecera -->
         <div style="background: #f0f0f0; padding: 20px; margin-bottom: 25px; border-radius: 8px;">

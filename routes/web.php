@@ -86,7 +86,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/budgets/export-chapter/{id}', [BudgetController::class, 'exportChapter'])->name('budgets.export-chapter');
     Route::get('/budgets/export-presupuesto/{id}', [BudgetController::class, 'exportPresupuesto'])->name('budgets.export-presupuesto');
     Route::get('/budgets/export-complete/{id}', [BudgetController::class, 'exportComplete'])->name('budgets.export-complete');
-    
+    Route::get('/budgets/export-hierarchical/{id}', [BudgetController::class, 'exportHierarchical'])->name('budgets.export-hierarchical');
     // ========== ADMIN ==========
     Route::get('/admin/tenants', [TenantController::class, 'index'])->name('admin.tenants.index');
     Route::get('/admin/tenants/create', [TenantController::class, 'create'])->name('admin.tenants.create');

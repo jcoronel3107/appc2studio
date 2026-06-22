@@ -11,6 +11,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\BudgetCompleteExport;
 use Illuminate\Http\Request;
 use App\Exports\PresupuestoExport;
+use App\Exports\BudgetHierarchicalExport;
 
 
 class BudgetController extends Controller
@@ -266,5 +267,12 @@ public function exportComplete($id)
     $budget = Budget::findOrFail($id);
     $filename = 'presupuesto_' . $budget->id . '_' . str_replace(' ', '_', $budget->obra) . '.xlsx';
     return Excel::download(new BudgetCompleteExport($id), $filename);
+}
+
+public function exportHierarchical($id)
+{
+    $budget = Budget::findOrFail($id);
+    $filename = 'presupuesto_' . $budget->id . '_' . str_replace(' ', '_', $budget->obra) . '.xlsx';
+    return Excel::download(new BudgetHierarchicalExport($id), $filename);
 }
 }
