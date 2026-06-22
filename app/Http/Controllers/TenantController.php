@@ -6,6 +6,10 @@ use App\Models\Tenant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Log;
 
 class TenantController extends Controller
 {
@@ -24,7 +28,7 @@ class TenantController extends Controller
         return view('admin.tenants.create');
     }
 
-    public function store(Request $request)
+   public function store(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:255',
@@ -34,11 +38,20 @@ class TenantController extends Controller
             'plan' => 'required|in:free,pro,enterprise',
         ]);
 
-        try {
+        try 
+        {
+            // Crear archivo SQLite con ruta correcta
             $dbPath = 'database/tenants/' . $request->subdomain . '.sqlite';
-            File::ensureDirectoryExists('database/tenants');
-            File::put($dbPath, '');
+            $fullDbPath = base_path($dbPath);
+            
+            $dbDirectory = base_path('database/tenants');
+            if (!File::exists($dbDirectory)) {
+                File::makeDirectory($dbDirectory, 0755, true);
+            }
+            
+            File::put($fullDbPath, '');
 
+            // Crear tenant
             $tenant = Tenant::create([
                 'name' => $request->name,
                 'subdomain' => $request->subdomain,
@@ -50,16 +63,40 @@ class TenantController extends Controller
                 'is_active' => $request->has('is_active'),
             ]);
 
-            config()->set('database.connections.tenant.database', storage_path($dbPath));
+            // Configurar conexión
+            Config::set('database.connections.tenant', [
+                'driver' => 'sqlite',
+                'database' => $fullDbPath,
+                'prefix' => '',
+                'foreign_key_constraints' => true,
+            ]);
+
+            // Ejecutar migraciones
             Artisan::call('migrate', [
                 '--database' => 'tenant',
                 '--force' => true,
             ]);
 
+            // Crear usuario admin
+            Config::set('database.default', 'tenant');
+            DB::purge('tenant');
+            DB::connection('tenant');
+
+            if (Schema::connection('tenant')->hasTable('users')) {
+                $userClass = 'App\Models\User';
+                $userClass::on('tenant')->create([
+                    'name' => 'Administrador',
+                    'email' => $request->email,
+                    'password' => bcrypt('password123'),
+                    'is_admin' => true,
+                ]);
+            }
+
             return redirect()->route('admin.tenants.index')
-                ->with('success', 'Tenant ' . $tenant->name . ' creado exitosamente!');
+                ->with('success', '✅ Cliente creado exitosamente! Acceso: http://' . $request->subdomain . '.localhost:8000');
+
         } catch (\Exception $e) {
-            return back()->with('error', 'Error: ' . $e->getMessage());
+            return back()->with('error', '❌ Error: ' . $e->getMessage());
         }
     }
 
@@ -83,21 +120,23 @@ class TenantController extends Controller
         $tenant->update($request->all());
 
         return redirect()->route('admin.tenants.index')
-            ->with('success', 'Tenant ' . $tenant->name . ' actualizado exitosamente!');
+            ->with('success', 'Cliente actualizado exitosamente!');
     }
 
     public function destroy($id)
     {
         $tenant = Tenant::findOrFail($id);
 
-        if (File::exists($tenant->database_path)) {
-            File::delete($tenant->database_path);
+        // Eliminar archivo de base de datos
+        $dbPath = database_path($tenant->database_path);
+        if (File::exists($dbPath)) {
+            File::delete($dbPath);
         }
 
         $tenant->delete();
 
         return redirect()->route('admin.tenants.index')
-            ->with('success', 'Tenant eliminado exitosamente!');
+            ->with('success', 'Cliente eliminado exitosamente!');
     }
 
     public function switch($id)

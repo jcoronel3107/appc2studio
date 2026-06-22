@@ -10,69 +10,47 @@
         <!-- Menú principal -->
         <div style="display: flex; align-items: center; gap: 24px;">
             <?php if(auth()->guard()->check()): ?>
-                <!-- Menú para ADMIN (sin subdominio) -->
-                <?php if(Auth::user()->is_admin): ?>
-                    <a href="<?php echo e(route('apus.index')); ?>" style="color: #4b5563; text-decoration: none; padding: 8px 0;">
-                        📋 APUs
-                    </a>
-                    <a href="<?php echo e(url('/importar')); ?>" style="color: #4b5563; text-decoration: none; padding: 8px 0;">
-                        📤 Importar
-                    </a>
-                    <a href="<?php echo e(route('apus.summary')); ?>" style="color: #4b5563; text-decoration: none; padding: 8px 0;">
-                        📊 Resumen
-                    </a>
-                    <a href="<?php echo e(route('export.apus')); ?>" style="color: #4b5563; text-decoration: none; padding: 8px 0;">
-                        💾 Exportar
-                    </a>
-                    
-                    <!-- Separador -->
-                    <div style="width: 1px; height: 30px; background: #e5e7eb;"></div>
-                    
-                    <!-- PRESUPUESTOS para ADMIN -->
-                    <a href="<?php echo e(route('budgets.index')); ?>" style="color: #8b5cf6; text-decoration: none; padding: 8px 0;">
-                        📋 Presupuestos
-                    </a>
-                    <a href="<?php echo e(route('budgets.create-chapter')); ?>" style="color: #22c55e; text-decoration: none; padding: 8px 0;">
-                        📝 Nuevo Presupuesto
-                    </a>
-                    
-                    <!-- Separador -->
-                    <div style="width: 1px; height: 30px; background: #e5e7eb;"></div>
-                    
-                    <!-- Clientes (solo admin) -->
-                    <a href="<?php echo e(route('admin.tenants.index')); ?>" style="color: #8b5cf6; text-decoration: none; padding: 8px 0;">
-                        🏢 Clientes
-                    </a>
-                    <div style="width: 1px; height: 30px; background: #e5e7eb;"></div>
-                <?php else: ?>
-                    <!-- Menú para TENANT (con subdominio) -->
-                    <a href="<?php echo e(route('tenant.apus.index')); ?>" style="color: #4b5563; text-decoration: none; padding: 8px 0;">
-                        📋 APUs
-                    </a>
-                    <a href="<?php echo e(route('tenant.importar')); ?>" style="color: #4b5563; text-decoration: none; padding: 8px 0;">
-                        📤 Importar
-                    </a>
-                    <a href="<?php echo e(route('tenant.apus.summary')); ?>" style="color: #4b5563; text-decoration: none; padding: 8px 0;">
-                        📊 Resumen
-                    </a>
-                    <a href="<?php echo e(route('tenant.export.apus')); ?>" style="color: #4b5563; text-decoration: none; padding: 8px 0;">
-                        💾 Exportar
-                    </a>
-                    
-                    <!-- Separador -->
-                    <div style="width: 1px; height: 30px; background: #e5e7eb;"></div>
-                    
-                    <!-- PRESUPUESTOS para TENANT -->
-                    <a href="<?php echo e(route('tenant.budgets.index')); ?>" style="color: #8b5cf6; text-decoration: none; padding: 8px 0;">
-                        📋 Presupuestos
-                    </a>
-                    <a href="<?php echo e(route('tenant.budgets.create-chapter')); ?>" style="color: #22c55e; text-decoration: none; padding: 8px 0;">
-                        📝 Nuevo Presupuesto
-                    </a>
-                <?php endif; ?>
+                <!-- APUs -->
+                <a href="<?php echo e(url('/apus')); ?>" style="color: #4b5563; text-decoration: none; padding: 8px 0;">
+                    📋 APUs
+                </a>
+                
+                <!-- Importar -->
+                <a href="<?php echo e(url('/importar')); ?>" style="color: #4b5563; text-decoration: none; padding: 8px 0;">
+                    📤 Importar
+                </a>
+                
+                <!-- Resumen -->
+                <a href="<?php echo e(url('/apu-summary')); ?>" style="color: #4b5563; text-decoration: none; padding: 8px 0;">
+                    📊 Resumen
+                </a>
+                
+                <!-- Exportar -->
+                <a href="<?php echo e(url('/exportar-apus')); ?>" style="color: #4b5563; text-decoration: none; padding: 8px 0;">
+                    💾 Exportar
+                </a>
                 
                 <!-- Separador -->
                 <div style="width: 1px; height: 30px; background: #e5e7eb;"></div>
+                
+                <!-- Presupuestos -->
+                <a href="<?php echo e(url('/budgets')); ?>" style="color: #8b5cf6; text-decoration: none; padding: 8px 0;">
+                    📋 Presupuestos
+                </a>
+                <a href="<?php echo e(url('/budgets/create-chapter')); ?>" style="color: #22c55e; text-decoration: none; padding: 8px 0;">
+                    📝 Nuevo Presupuesto
+                </a>
+                
+                <!-- Separador -->
+                <div style="width: 1px; height: 30px; background: #e5e7eb;"></div>
+                
+                <!-- Solo admin: Clientes -->
+                <?php if(Auth::user()->is_admin): ?>
+                    <a href="<?php echo e(url('/admin/tenants')); ?>" style="color: #8b5cf6; text-decoration: none; padding: 8px 0;">
+                        🏢 Clientes
+                    </a>
+                    <div style="width: 1px; height: 30px; background: #e5e7eb;"></div>
+                <?php endif; ?>
                 
                 <!-- Menú de usuario -->
                 <div style="position: relative;">
@@ -113,7 +91,6 @@
         }
     }
     
-    // Cerrar el menú al hacer clic fuera
     document.addEventListener('click', function(event) {
         var menu = document.getElementById('user-menu');
         var button = event.target.closest('button');

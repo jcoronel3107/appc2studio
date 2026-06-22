@@ -10,69 +10,47 @@
         <!-- Menú principal -->
         <div style="display: flex; align-items: center; gap: 24px;">
             @auth
-                <!-- Menú para ADMIN (sin subdominio) -->
-                @if(Auth::user()->is_admin)
-                    <a href="{{ route('apus.index') }}" style="color: #4b5563; text-decoration: none; padding: 8px 0;">
-                        📋 APUs
-                    </a>
-                    <a href="{{ url('/importar') }}" style="color: #4b5563; text-decoration: none; padding: 8px 0;">
-                        📤 Importar
-                    </a>
-                    <a href="{{ route('apus.summary') }}" style="color: #4b5563; text-decoration: none; padding: 8px 0;">
-                        📊 Resumen
-                    </a>
-                    <a href="{{ route('export.apus') }}" style="color: #4b5563; text-decoration: none; padding: 8px 0;">
-                        💾 Exportar
-                    </a>
-                    
-                    <!-- Separador -->
-                    <div style="width: 1px; height: 30px; background: #e5e7eb;"></div>
-                    
-                    <!-- PRESUPUESTOS para ADMIN -->
-                    <a href="{{ route('budgets.index') }}" style="color: #8b5cf6; text-decoration: none; padding: 8px 0;">
-                        📋 Presupuestos
-                    </a>
-                    <a href="{{ route('budgets.create-chapter') }}" style="color: #22c55e; text-decoration: none; padding: 8px 0;">
-                        📝 Nuevo Presupuesto
-                    </a>
-                    
-                    <!-- Separador -->
-                    <div style="width: 1px; height: 30px; background: #e5e7eb;"></div>
-                    
-                    <!-- Clientes (solo admin) -->
-                    <a href="{{ route('admin.tenants.index') }}" style="color: #8b5cf6; text-decoration: none; padding: 8px 0;">
-                        🏢 Clientes
-                    </a>
-                    <div style="width: 1px; height: 30px; background: #e5e7eb;"></div>
-                @else
-                    <!-- Menú para TENANT (con subdominio) -->
-                    <a href="{{ route('tenant.apus.index') }}" style="color: #4b5563; text-decoration: none; padding: 8px 0;">
-                        📋 APUs
-                    </a>
-                    <a href="{{ route('tenant.importar') }}" style="color: #4b5563; text-decoration: none; padding: 8px 0;">
-                        📤 Importar
-                    </a>
-                    <a href="{{ route('tenant.apus.summary') }}" style="color: #4b5563; text-decoration: none; padding: 8px 0;">
-                        📊 Resumen
-                    </a>
-                    <a href="{{ route('tenant.export.apus') }}" style="color: #4b5563; text-decoration: none; padding: 8px 0;">
-                        💾 Exportar
-                    </a>
-                    
-                    <!-- Separador -->
-                    <div style="width: 1px; height: 30px; background: #e5e7eb;"></div>
-                    
-                    <!-- PRESUPUESTOS para TENANT -->
-                    <a href="{{ route('tenant.budgets.index') }}" style="color: #8b5cf6; text-decoration: none; padding: 8px 0;">
-                        📋 Presupuestos
-                    </a>
-                    <a href="{{ route('tenant.budgets.create-chapter') }}" style="color: #22c55e; text-decoration: none; padding: 8px 0;">
-                        📝 Nuevo Presupuesto
-                    </a>
-                @endif
+                <!-- APUs -->
+                <a href="{{ url('/apus') }}" style="color: #4b5563; text-decoration: none; padding: 8px 0;">
+                    📋 APUs
+                </a>
+                
+                <!-- Importar -->
+                <a href="{{ url('/importar') }}" style="color: #4b5563; text-decoration: none; padding: 8px 0;">
+                    📤 Importar
+                </a>
+                
+                <!-- Resumen -->
+                <a href="{{ url('/apu-summary') }}" style="color: #4b5563; text-decoration: none; padding: 8px 0;">
+                    📊 Resumen
+                </a>
+                
+                <!-- Exportar -->
+                <a href="{{ url('/exportar-apus') }}" style="color: #4b5563; text-decoration: none; padding: 8px 0;">
+                    💾 Exportar
+                </a>
                 
                 <!-- Separador -->
                 <div style="width: 1px; height: 30px; background: #e5e7eb;"></div>
+                
+                <!-- Presupuestos -->
+                <a href="{{ url('/budgets') }}" style="color: #8b5cf6; text-decoration: none; padding: 8px 0;">
+                    📋 Presupuestos
+                </a>
+                <a href="{{ url('/budgets/create-chapter') }}" style="color: #22c55e; text-decoration: none; padding: 8px 0;">
+                    📝 Nuevo Presupuesto
+                </a>
+                
+                <!-- Separador -->
+                <div style="width: 1px; height: 30px; background: #e5e7eb;"></div>
+                
+                <!-- Solo admin: Clientes -->
+                @if(Auth::user()->is_admin)
+                    <a href="{{ url('/admin/tenants') }}" style="color: #8b5cf6; text-decoration: none; padding: 8px 0;">
+                        🏢 Clientes
+                    </a>
+                    <div style="width: 1px; height: 30px; background: #e5e7eb;"></div>
+                @endif
                 
                 <!-- Menú de usuario -->
                 <div style="position: relative;">
@@ -113,7 +91,6 @@
         }
     }
     
-    // Cerrar el menú al hacer clic fuera
     document.addEventListener('click', function(event) {
         var menu = document.getElementById('user-menu');
         var button = event.target.closest('button');
