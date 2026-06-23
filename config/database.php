@@ -46,10 +46,10 @@ return [
 
         'tenant' => [
         'driver' => 'sqlite',
-        'database' => storage_path('database/tenant.sqlite'),
+        'database' => env('DB_TENANT_DATABASE', database_path('tenants/tenant.sqlite')),
         'prefix' => '',
-        'foreign_key_constraints' => true,
-        ],
+        'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
+    ],
 
         'mysql' => [
             'driver' => 'mysql',

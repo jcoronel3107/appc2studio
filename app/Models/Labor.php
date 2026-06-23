@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Labor extends Model
+class Labor extends TenantModel
 {
     protected $table = 'labors';
-    
+        // 👇 DEBE tener esto
+    protected $connection = 'tenant';
+
     protected $fillable = [
         'code',
         'name',
@@ -16,6 +18,6 @@ class Labor extends Model
         'hourly_rate',
         'daily_rate',
         'termino',
-        'description'
+        'description', 'tenant_id'
     ];
 }

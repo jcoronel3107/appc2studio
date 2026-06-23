@@ -4,8 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Material extends Model
+class Material extends TenantModel
 {
+    protected $connection = 'tenant';
     protected $fillable = [
         'code',
         'name',
@@ -13,6 +14,7 @@ class Material extends Model
         'price',
         'category',
         'termino',      // ← Debe estar aquí
-        'description'
+        'description', 
+        'tenant_id'
     ];
 }

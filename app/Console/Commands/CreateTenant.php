@@ -16,81 +16,29 @@ class CreateTenant extends Command
     protected $description = 'Crear un nuevo cliente con su base de datos';
 
     public function handle()
-    {
-        $subdomain = $this->argument('subdomain');
-        $name = $this->argument('name');
-        $email = $this->argument('email');
-
-        try {
-            // 1. Crear archivo SQLite
-            $dbPath = base_path('database/tenants/' . $subdomain . '.sqlite');
-            $dbDirectory = base_path('database/tenants');
-            
-            if (!File::exists($dbDirectory)) {
-                File::makeDirectory($dbDirectory, 0755, true);
-            }
-            
-            if (!File::exists($dbPath)) {
-                File::put($dbPath, '');
-                $this->info('✅ Base de datos creada: ' . $dbPath);
-            } else {
-                $this->info('✅ Base de datos ya existe: ' . $dbPath);
-            }
-
-            // 2. Crear tenant
-            $tenant = Tenant::create([
-                'name' => $name,
-                'subdomain' => $subdomain,
-                'database_path' => 'database/tenants/' . $subdomain . '.sqlite',
-                'email' => $email,
-                'plan' => 'free',
-                'is_active' => true,
-                'subscription_expires' => now()->addYear(),
-            ]);
-
-            $this->info('✅ Cliente creado: ' . $tenant->name);
-
-            // 3. Configurar conexión
-            Config::set('database.connections.tenant', [
-                'driver' => 'sqlite',
-                'database' => $dbPath,
-                'prefix' => '',
-                'foreign_key_constraints' => true,
-            ]);
-
-            // 4. Ejecutar migraciones
-            $this->info('⏳ Ejecutando migraciones...');
-            Artisan::call('migrate', [
-                '--database' => 'tenant',
-                '--force' => true,
-            ]);
-            $this->info('✅ Migraciones ejecutadas');
-
-            // 5. Crear usuario admin
-            Config::set('database.default', 'tenant');
-            DB::purge('tenant');
-            DB::connection('tenant');
-
-            if (Schema::connection('tenant')->hasTable('users')) {
-                $userClass = 'App\Models\User';
-                $userClass::on('tenant')->create([
-                    'name' => 'Administrador',
-                    'email' => $email,
-                    'password' => bcrypt('password123'),
-                    'is_admin' => true,
-                ]);
-                $this->info('✅ Usuario admin creado');
-            }
-
-            $this->info('🔑 Email: ' . $email);
-            $this->info('🔑 Password: password123');
-            $this->info('🔗 URL: http://' . $subdomain . '.localhost:8000');
-
-            return 0;
-        } catch (\Exception $e) {
-            $this->error('❌ Error: ' . $e->getMessage());
-            $this->error('En archivo: ' . $e->getFile() . ' línea ' . $e->getLine());
-            return 1;
-        }
+{
+    $subdomain = $this->argument('subdomain');
+    
+    // Crear la base de datos del tenant
+    $dbPath = database_path("tenants/{$subdomain}.sqlite");
+    
+    // Crear el archivo si no existe
+    if (!file_exists($dbPath)) {
+        touch($dbPath);
+        chmod($dbPath, 0644);
     }
+    
+    // Crear el tenant en la base master
+    $tenant = Tenant::create([
+        'name' => $this->argument('name'),
+        'subdomain' => $subdomain,
+        'email' => $this->argument('email'),
+        'database_path' => "database/tenants/{$subdomain}.sqlite", // ✅ Ruta relativa
+        'plan' => $this->argument('plan') ?? 'free',
+        'is_active' => true,
+        'subscription_expires' => now()->addYear(),
+    ]);
+    
+    // ... resto del código
+}
 }

@@ -5,8 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class AnalysisItem extends Model
+class AnalysisItem extends TenantModel
 {
+    // 👇 DEBE tener esto
+    protected $connection = 'tenant';
     protected $fillable = [
         'analysis_header_id',
         'section',
@@ -15,7 +17,7 @@ class AnalysisItem extends Model
         'unit_price',
         'performance',
         'total',
-        'row_position'
+        'row_position', 'tenant_id'
     ];
     
     protected $casts = [

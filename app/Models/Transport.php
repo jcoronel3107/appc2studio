@@ -4,10 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Transport extends Model
+class Transport extends TenantModel
 {
     protected $table = 'transports';
-    
+    protected $connection = 'tenant';
     protected $fillable = [
         'code',
         'name',
@@ -15,6 +15,7 @@ class Transport extends Model
         'unit',
         'price',
         'termino',
-        'description'
+        'description',
+        'tenant_id'
     ];
 }

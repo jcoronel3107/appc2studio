@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Equipment extends Model
+class Equipment extends TenantModel
 {
     protected $table = 'equipments';  // ← Especificar el nombre correcto de la tabla
-    
+    protected $connection = 'tenant';
+
     protected $fillable = [
         'code',
         'name',
@@ -15,6 +16,7 @@ class Equipment extends Model
         'unit',
         'price',
         'termino',
-        'description'
+        'description',
+        'tenant_id'
     ];
 }

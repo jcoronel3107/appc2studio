@@ -4,8 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class BudgetItem extends Model
+class BudgetItem extends TenantModel
 {
+    protected $connection = 'tenant';
     protected $fillable = [
         'budget_id',
         'chapter_code',

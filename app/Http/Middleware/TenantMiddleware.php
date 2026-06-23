@@ -52,18 +52,45 @@ class TenantMiddleware
             }
         }
         
+        // ✅ CORREGIDO: La ruta correcta es "tenants/{subdominio}.sqlite" (sin "database/" al inicio)
+        // porque database_path() ya incluye la carpeta "database/"
+        $correctPath = "tenants/{$subdomain}.sqlite";
+        
+        // Actualizar la ruta en la base de datos si es incorrecta
+        if ($tenant->database_path !== $correctPath) {
+            $tenant->update(['database_path' => $correctPath]);
+            \Log::info('Ruta de tenant actualizada:', [
+                'subdomain' => $subdomain,
+                'nueva_ruta' => $correctPath
+            ]);
+        }
+        
+        // Construir la ruta completa usando database_path()
+        $dbPath = database_path($correctPath);
+        
+        // Verificar que el directorio existe, si no, crearlo
+        $directory = dirname($dbPath);
+        if (!is_dir($directory)) {
+            mkdir($directory, 0755, true);
+            \Log::info('Directorio de tenants creado:', ['path' => $directory]);
+        }
+        
+        // Verificar que el archivo existe, si no, crearlo
+        if (!file_exists($dbPath)) {
+            touch($dbPath);
+            chmod($dbPath, 0644);
+            \Log::info('Base de datos del tenant creada:', [
+                'subdomain' => $subdomain,
+                'path' => $dbPath
+            ]);
+        }
+        
         // Guardar el tenant en la sesión
         session(['tenant_id' => $tenant->id]);
         session(['tenant_name' => $tenant->name]);
-        session(['tenant_database' => $tenant->database_path]);
+        session(['tenant_database' => $dbPath]);
         
         // Configurar la conexión dinámica
-        $dbPath = storage_path($tenant->database_path);
-        
-        if (!file_exists($dbPath)) {
-            abort(500, 'Base de datos del cliente no encontrada. Contacte al administrador.');
-        }
-        
         Config::set('database.connections.tenant', [
             'driver' => 'sqlite',
             'database' => $dbPath,
@@ -74,6 +101,14 @@ class TenantMiddleware
         // Conectar a la base de datos del tenant
         DB::purge('tenant');
         DB::connection('tenant');
+        
+        // Log para verificar la conexión
+        \Log::info('Tenant conectado:', [
+            'subdomain' => $subdomain,
+            'database' => $dbPath,
+            'exists' => file_exists($dbPath),
+            'connection_name' => DB::connection('tenant')->getDatabaseName()
+        ]);
         
         // Compartir el tenant con todas las vistas
         view()->share('currentTenant', $tenant);

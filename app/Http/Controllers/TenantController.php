@@ -77,6 +77,18 @@ class TenantController extends Controller
                 '--force' => true,
             ]);
 
+            // ============================================================
+            // EJECUTAR SEEDER CON DATOS BASE
+            // ============================================================
+            Artisan::call('db:seed', [
+                '--database' => 'tenant',
+                '--class' => 'TenantBaseSeeder',
+                '--force' => true,
+            ]);
+
+
+
+
             // Crear usuario admin
             Config::set('database.default', 'tenant');
             DB::purge('tenant');

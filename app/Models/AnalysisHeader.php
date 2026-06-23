@@ -5,8 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class AnalysisHeader extends Model
+class AnalysisHeader extends TenantModel
 {
+        // 👇 DEBE tener esto
+    protected $connection = 'tenant';
     protected $fillable = [
         'code',
         'name', 
@@ -15,6 +17,7 @@ class AnalysisHeader extends Model
         'indirect_cost',
         'total_cost',
         'word_file',  // ← Agrega esta línea
+        'tenant_id'   // ← Agrega esta línea    
     ];
     
     public function items(): HasMany
